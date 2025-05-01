@@ -160,7 +160,46 @@ Agora você tem as instruções detalhadas para a seção de instalação do seu
 
 ## Como Usar
 
-(Explique como o administrador cria uma sala, obtém o código, e como o participante usa o código para entrar na sala e responder.)
+## Guia de Uso
+
+Este guia explica os passos básicos para administradores e participantes utilizarem a aplicação.
+
+### Para Administradores
+
+1.  **Acesse a Área Administrativa:** Navegue até a página de login do administrador, geralmente em `/auth/login`. Use suas credenciais de administrador para entrar.
+
+2.  **Dashboard do Admin:** Após o login, você será redirecionado para o Dashboard do Admin (`/admin/dashboard`), onde verá uma lista das salas existentes (se houver).
+
+3.  **Crie uma Nova Sala:**
+    * No Dashboard, clique no botão "Criar Nova Sala".
+    * Na página de criação, insira um nome para a sala (ex: "Hackathon de Inovação", "Quiz de Tecnologia").
+    * Clique em "Criar Sala".
+
+4.  **Obtenha o Código da Sala:** Após criar a sala, você será redirecionado de volta para o Dashboard ou para a página de gerenciamento da sala. O código único de 6 dígitos gerado para a sala será exibido (por exemplo, no Dashboard, ao lado do nome da sala). Este código é o que os participantes usarão para entrar.
+
+5.  **Adicione Perguntas (Gerenciar Sala):**
+    * No Dashboard, encontre a sala que você acabou de criar e clique no link "Gerenciar".
+    * Na página de gerenciamento da sala, você verá a opção para adicionar novas perguntas.
+    * Digite o texto da pergunta no campo e clique em "Adicionar Pergunta". Repita para adicionar todas as perguntas desejadas.
+    * Você também pode ativar/desativar a sala ou excluí-la nesta página.
+
+### Para Participantes
+
+1.  **Acesse a Página Inicial:** Abra a aplicação no seu navegador, geralmente em `http://127.0.0.1:5000/`.
+
+2.  **Entre em uma Sala:**
+    * Na página inicial, clique no botão "Participar Agora" (ou navegue diretamente para `/join`).
+    * Você será levado para a página "Entrar em uma Sala".
+    * Digite o seu nome.
+    * Insira o Código da Sala fornecido pelo administrador.
+    * Clique em "Entrar na Sala".
+
+3.  **Responda às Perguntas:**
+    * Se o código da sala for válido e a sala estiver ativa, você será redirecionado para a página de Perguntas (`/questions`).
+    * Leia cada pergunta e digite sua resposta no campo de texto correspondente.
+    * Depois de responder a todas as perguntas (ou as que desejar), clique no botão "Enviar Respostas" ao final da página.
+
+Suas respostas serão salvas, e o administrador poderá visualizá-las na área de gerenciamento da sala, clicando em "Ver Resultados".
 
 ## Licença
 
