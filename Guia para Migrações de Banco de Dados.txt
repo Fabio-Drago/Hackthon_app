@@ -1,0 +1,71 @@
+## Guia para Migrações de Banco de Dados (para Iniciantes)
+
+Quando você faz alterações nos modelos do seu banco de dados (`models.py`), como adicionar uma nova coluna a uma tabela ou mudar o tipo de dado de uma coluna, você precisa atualizar o esquema do banco de dados real para que ele corresponda aos seus modelos no código. O Flask-Migrate ajuda a automatizar esse processo de forma segura, sem perder os dados existentes.
+
+É por isso que comentamos a linha `db.create_all()` em `app.py` após a configuração inicial. Em vez de apagar e recriar tabelas, usaremos migrações.
+
+**Pré-requisitos:**
+
+* Você deve ter o Flask-Migrate instalado (`pip install Flask-Migrate`).
+* O ambiente de migrações deve estar inicializado (você rodou `flask db init` uma vez).
+* Sua variável de ambiente `FLASK_APP` deve estar configurada para sua fábrica de aplicação (`$env:FLASK_APP="app:create_app()" `ou `export FLASK_APP=app:create_app()`).
+* Seu ambiente virtual deve estar ativo.
+* A linha `db.create_all()` em `app.py` deve estar comentada.
+
+**O Fluxo de Migração:**
+
+Siga estes passos sempre que alterar seus modelos em `models.py`:
+
+1.  **Faça as Alterações nos Seus Modelos:**
+    Edite o arquivo `models.py` e modifique seus modelos SQLAlchemy como desejar.
+    *Exemplo:* Adicionar uma coluna `pontuacao` ao modelo `Participant`:
+
+    ```python
+    # models.py
+    # ... outras definições ...
+
+    class Participant(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String(100), nullable=False)
+        room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+        joined_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+        pontuacao = db.Column(db.Integer, default=0, nullable=False) # <--- Nova Coluna
+
+        # Relação com Respostas
+        answers = db.relationship('Answer', backref='participant', lazy='dynamic')
+
+        def __repr__(self):
+            return f'<Participant {self.name} in Room {self.room_id}>'
+
+    # ... restante dos modelos ...
+    ```
+
+2.  **Gere um Script de Migração:**
+    Abra seu terminal (com o ambiente virtual ativo e `FLASK_APP` configurado) na raiz do projeto e diga ao Flask-Migrate para detectar as mudanças nos seus modelos e gerar um script para aplicá-las:
+
+    ```bash
+    flask db migrate -m "Adicionar coluna de pontuacao ao participante"
+    ```
+    O ` -m "..."` é uma mensagem descritiva para você saber o que essa migração faz.
+    O Flask-Migrate criará um novo arquivo Python na pasta `migrations/versions/` com o código necessário para fazer a alteração no banco de dados (por exemplo, adicionar a nova coluna).
+
+3.  **Revise o Script de Migração (Opcional, mas Recomendado):**
+    É uma boa prática abrir o arquivo Python recém-criado na pasta `migrations/versions/` e dar uma olhada no código gerado. Ele terá duas funções principais: `upgrade()` (para aplicar a mudança) e `downgrade()` (para reverter a mudança, caso necessário). Verifique se o script faz o que você espera.
+
+4.  **Aplique a Migração no Banco de Dados:**
+    Agora, execute o script de migração gerado para aplicar as mudanças ao seu banco de dados real:
+
+    ```bash
+    flask db upgrade
+    ```
+    Este comando lê o script mais recente na pasta `versions/` e executa a função `upgrade()`. Seu banco de dados agora terá a nova coluna `pontuacao` na tabela `participant`.
+
+5.  **Reverta a Última Migração (Se Houver Erro):**
+    Se algo der errado após aplicar a migração ou se você mudar de ideia, você pode reverter a última migração aplicada:
+
+    ```bash
+    flask db downgrade
+    ```
+    Este comando executa a função `downgrade()` do último script de migração, desfazendo a mudança.
+
+Seguindo estes passos (Modificar -> Migrate -> Upgrade), você pode evoluir o esquema do seu banco de dados de forma controlada e segura sempre que fizer alterações nos seus modelos SQLAlchemy.
