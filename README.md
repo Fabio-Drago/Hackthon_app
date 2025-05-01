@@ -30,7 +30,133 @@ Este é um aplicativo web simples construído com Flask, projetado para facilita
 
 ## Instalação e Configuração
 
-(Aqui você adicionaria instruções sobre como clonar o repositório, configurar o ambiente virtual, instalar dependências (`pip install -r requirements.txt`), configurar o banco de dados (`.env` com `DATABASE_URL`) e rodar a aplicação).
+## Instalação e Execução Local
+
+Siga estes passos para configurar e executar o projeto localmente.
+
+### Pré-requisitos
+
+* Python 3.6+
+* Git
+* (Opcional, se for usar MySQL) Um servidor MySQL rodando e as credenciais de acesso.
+
+### Configuração
+
+1.  **Clone o Repositório:**
+
+    Abra seu terminal e clone o repositório do GitHub:
+
+    ```bash
+    git clone <URL_DO_SEU_REPOSITORIO>
+    ```
+
+    Substitua `<URL_DO_SEU_REPOSITORIO>` pelo endereço real do seu repositório no GitHub.
+
+2.  **Navegue até o Diretório do Projeto:**
+
+    Entre na pasta clonada:
+
+    ```bash
+    cd hackathon_app
+    ```
+
+3.  **Crie e Ative o Ambiente Virtual:**
+
+    É altamente recomendado usar um ambiente virtual para isolar as dependências do projeto.
+
+    * **No Windows:**
+
+        ```bash
+        python -m venv venv
+        .\venv\Scripts\activate
+        ```
+
+    * **No macOS e Linux:**
+
+        ```bash
+        python3 -m venv venv
+        source venv/bin/activate
+        ```
+
+    Você verá o nome do ambiente virtual (`venv`) no início da linha do seu terminal, indicando que ele está ativo.
+
+4.  **Instale as Dependências:**
+
+    Com o ambiente virtual ativo, instale as bibliotecas necessárias listadas no `requirements.txt`:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+5.  **Configuração do Banco de Dados:**
+
+    A aplicação usa o SQLAlchemy para interagir com o banco de dados e lê a string de conexão da variável de ambiente `DATABASE_URL`, configurada no arquivo `.env`.
+
+    * Crie um arquivo na raiz do projeto chamado `.env`.
+    * Edite o arquivo `.env` e adicione a sua string de conexão do banco de dados no formato `DATABASE_URL="..."`.
+
+    **Exemplo para MySQL:**
+
+    ```dotenv
+    SECRET_KEY='sua_chave_secreta_aqui'
+    DATABASE_URL="mysql+pymysql://seu_usuario:sua_senha@seu_host:sua_porta/hackton"
+    ```
+    Substitua `seu_usuario`, `sua_senha`, `seu_host`, `sua_porta` (geralmente 3306) com as suas credenciais do MySQL.
+    **Importante:** Certifique-se de que o banco de dados chamado `hackton` já existe no seu servidor MySQL e que o `seu_usuario` tem permissões para criar tabelas nele. (Consulte as instruções anteriores sobre como criar o banco de dados MySQL manualmente se ainda não o fez).
+
+    **Exemplo para SQLite (para teste rápido, não recomendado para produção):**
+
+    ```dotenv
+    SECRET_KEY='sua_chave_secreta_aqui'
+    DATABASE_URL="sqlite:///app.db"
+    ```
+    Neste caso, um arquivo `app.db` será criado na raiz do projeto.
+
+    **Não se esqueça de definir uma `SECRET_KEY` forte e única!**
+
+6.  **Inicialize o Banco de Dados (Crie as Tabelas):**
+
+    Na primeira vez que você rodar a aplicação, as tabelas do banco de dados precisam ser criadas.
+
+    * Abra o arquivo `app.py`.
+    * Localize o bloco `with app.app_context():`.
+    * **Descomente** a linha `db.create_all()` dentro deste bloco.
+
+        ```python
+        with app.app_context():
+            # Comentar após a primeira execução ou usar Flask-Migrate
+            db.create_all() # <--- Descomente esta linha na primeira vez
+            print("Verifique se as tabelas foram criadas no banco de dados 'Hackton'.")
+            # ... (código para criar admin inicial)
+        ```
+
+    * Rode a aplicação uma vez para que as tabelas sejam criadas (veja o próximo passo).
+    * **Após a primeira execução bem-sucedida (verifique se as tabelas foram criadas no seu banco de dados), COMENTE NOVAMENTE** a linha `db.create_all()` para evitar tentar recriar as tabelas em execuções futuras.
+
+    * **(Opcional - Criar Usuário Admin Inicial):** Se você quiser um usuário administrador padrão, descomente o bloco de código abaixo de `db.create_all()` no `app.py` na **primeira execução** e lembre-se de **trocar a senha padrão**!
+
+7.  **Execute a Aplicação Flask:**
+
+    Com o ambiente virtual ativo e o banco de dados configurado/inicializado, você pode rodar a aplicação:
+
+    ```bash
+    flask run
+    ```
+    ou
+    ```bash
+    python app.py
+    ```
+
+    A aplicação deverá iniciar e indicar o endereço local onde está rodando (geralmente `http://127.0.0.1:5000/`).
+
+8.  **Acesse a Aplicação:**
+
+    Abra seu navegador e visite:
+
+    * Página inicial: `http://127.0.0.1:5000/`
+    * Login do Administrador: `http://127.0.0.1:5000/auth/login`
+
+Agora você tem as instruções detalhadas para a seção de instalação do seu README! Lembre-se de adaptar a URL do repositório e as configurações do banco de dados conforme o seu ambiente.
 
 ## Como Usar
 
