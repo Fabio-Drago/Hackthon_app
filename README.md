@@ -38,4 +38,4 @@ Este é um aplicativo web simples construído com Flask, projetado para facilita
 
 ## Licença
 
-(Espaço para a informação da licença - veja a recomendação abaixo)
+MIT
