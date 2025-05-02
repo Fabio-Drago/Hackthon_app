@@ -29,7 +29,7 @@ https://deadpan.pythonanywhere.com
 * **Gerenciamento de Formulários:** Flask-WTF
 * **Autenticação:** Flask-Login
 * **Interface:** HTML, CSS
-* **Outras funções:** Flask-SocketIO para funcionalidades em tempo real, Flask-Migrate para gerenciar o esquema do banco de dados.
+* **Outras funções:** Flask-Migrate para gerenciar o esquema do banco de dados.
 
 ## Instalação e Configuração
 
