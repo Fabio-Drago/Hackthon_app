@@ -1,0 +1,56 @@
+# Solução de Problemas: Erro de Exclusão de Participante/Conta
+
+Ao tentar excluir um registro da tabela `participant_account` no banco de dados, você pode encontrar o seguinte erro:
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (...)
+
+Este erro indica que você está tentando excluir um registro de uma tabela ("tabela pai") que é referenciada por outra tabela ("tabela filha") através de uma restrição de chave estrangeira (Foreign Key). O banco de dados impede essa exclusão para manter a integridade dos dados, evitando que registros "filhos" fiquem sem um "pai" referenciado.
+
+Na estrutura deste projeto, as tabelas `participant_account`, `participant` e `answer` têm as seguintes dependências de chave estrangeira:
+
+- A tabela `participant` possui uma chave estrangeira (`account_id`) que referencia a tabela `participant_account`.
+- A tabela `answer` possui uma chave estrangeira (`participant_id`) que referencia a tabela `participant`.
+
+Isso cria uma cadeia de dependência: `participant_account` <- `participant` <- `answer`. Para excluir um registro de `participant_account`, você precisa remover os registros dependentes na ordem inversa da cadeia de dependência, ou seja, começar pela tabela mais "filha".
+
+**Ordem Correta para Excluir Registros Relacionados:**
+
+Para excluir um registro específico da tabela `participant_account` (por exemplo, o registro com `id = 1`), você deve executar os comandos DELETE na seguinte ordem, do "filho" para o "pai":
+
+1.  **Excluir as Respostas (answer) relacionadas:** Remova todos os registros na tabela `answer` que estão associados a quaisquer entradas de participante (`participant`) vinculadas à conta de participante (`participant_account`) que você deseja excluir.
+
+    ```sql
+    DELETE FROM answer WHERE participant_id IN (SELECT id FROM participant WHERE account_id = [ID_DA_CONTA_PARTICIPANTE]);
+    ```
+    *Substitua `[ID_DA_CONTA_PARTICIPANTE]` pelo ID da conta de participante que você deseja excluir (por exemplo, `1`).*
+
+2.  **Excluir as Entradas de Participante (participant) relacionadas:** Remova todos os registros na tabela `participant` que estão vinculados à conta de participante (`participant_account`) que você deseja excluir.
+
+    ```sql
+    DELETE FROM participant WHERE account_id = [ID_DA_CONTA_PARTICIPANTE];
+    ```
+    *Substitua `[ID_DA_CONTA_PARTICIPANTE]` pelo ID da conta de participante que você deseja excluir (por exemplo, `1`).*
+
+3.  **Excluir a Conta de Participante (participant_account):** Finalmente, remova o registro da tabela `participant_account`.
+
+    ```sql
+    DELETE FROM participant_account WHERE id = [ID_DA_CONTA_PARTICIPANTE];
+    ```
+    *Substitua `[ID_DA_CONTA_PARTICIPANTE]` pelo ID da conta de participante que você deseja excluir (por exemplo, `1`).*
+
+**Como Executar os Comandos:**
+
+Você pode executar esses comandos SQL conectando-se ao seu banco de dados MySQL usando um cliente de linha de comando (como o cliente `mysql` disponível nos consoles Bash do PythonAnywhere) ou uma ferramenta de gerenciamento de banco de dados (como phpMyAdmin, DBeaver, etc.).
+
+**Exemplo para Excluir a Conta de Participante com ID = 1:**
+
+```sql
+-- Passo 1: Excluir Respostas relacionadas
+DELETE FROM answer WHERE participant_id IN (SELECT id FROM participant WHERE account_id = 1);
+
+-- Passo 2: Excluir Entradas de Participante relacionadas
+DELETE FROM participant WHERE account_id = 1;
+
+-- Passo 3: Excluir a Conta de Participante
+DELETE FROM participant_account WHERE id = 1;
+
+E pronto, apenas isso, continue com seus códigos! Sayonara.
