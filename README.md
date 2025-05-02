@@ -2,6 +2,9 @@
 
 Este é um aplicativo web simples construído com Flask, projetado para facilitar a organização e participação em hackathons ou sessões de perguntas e respostas interativas. Ele permite que administradores criem salas, adicionem perguntas e visualizem as respostas dos participantes, enquanto os participantes podem ingressar em salas com um código e submeter suas respostas.
 
+Se quiser testar a versão mais estável veja aqui:
+https://deadpan.pythonanywhere.com
+
 ## Funcionalidades Principais
 
 **Para Administradores:**
