@@ -1,207 +1,136 @@
-# Hackathon App
+# Hackathon app
 
-Este é um aplicativo web simples construído com Flask, projetado para facilitar a organização e participação em hackathons ou sessões de perguntas e respostas interativas. Ele permite que administradores criem salas, adicionem perguntas e visualizem as respostas dos participantes, enquanto os participantes podem ingressar em salas com um código e submeter suas respostas.
+Breve descrição sobre o seu projeto de Hackathon (ex: Uma aplicação web para gerenciar salas de hackathon, perguntas e respostas de participantes).
 
-Se quiser testar a versão mais estável veja aqui:
-https://deadpan.pythonanywhere.com
+## Requisitos
 
-## Funcionalidades Principais
+Para configurar e rodar esta aplicação, você precisará ter instalado em seu sistema:
 
-**Para Administradores:**
+* **Python 3.7+**
+* **MySQL Server** (ou MariaDB)
+* **Git**
 
-* **Login Seguro:** Área de login protegida por senha para administradores.
-* **Dashboard:** Visão geral das salas criadas.
-* **Criação de Salas:** Crie novas salas com um nome e um código único gerado automaticamente.
-* **Gerenciamento de Salas:** Adicione e remova perguntas para salas específicas.
-* **Ativar/Desativar Salas:** Controle a participação ativando ou desativando salas.
-* **Visualização de Resultados:** Veja todos os participantes de uma sala e suas respostas submetidas. (Nota: Um sistema de pontuação pode ser adicionado no futuro).
+## Configuração do Ambiente
 
-**Para Participantes:**
-
-* **Página de Entrada Intuitiva:** Uma landing page com design futurista.
-* **Entrar em Salas:** Junte-se a uma sala usando um código fornecido pelo administrador.
-* **Responder Perguntas:** Visualize as perguntas em uma sala ativa e submeta suas respostas.
-
-## Tecnologias Utilizadas
-
-* **Backend:** Flask (Python)
-* **Banco de Dados:** SQLAlchemy ORM (com suporte para MySQL ou SQLite, configurável via `DATABASE_URL`)
-* **Gerenciamento de Formulários:** Flask-WTF
-* **Autenticação:** Flask-Login
-* **Interface:** HTML, CSS
-* **Outras funções:** Flask-Migrate para gerenciar o esquema do banco de dados.
-
-## Instalação e Configuração
-
-## Instalação e Execução Local
-
-Siga estes passos para configurar e executar o projeto localmente.
-
-### Pré-requisitos
-
-* Python 3.6+
-* Git
-* (Opcional, se for usar MySQL) Um servidor MySQL rodando e as credenciais de acesso.
-
-### Configuração
+Siga estes passos para preparar seu ambiente de desenvolvimento:
 
 1.  **Clone o Repositório:**
-
-    Abra seu terminal e clone o repositório do GitHub:
-
     ```bash
-    git clone <URL_DO_SEU_REPOSITORIO>
+    git clone [URL_DO_SEU_REPOSITORIO_AQUI]
+    cd [nome_da_pasta_do_seu_projeto]
     ```
 
-    Substitua `<URL_DO_SEU_REPOSITORIO>` pelo endereço real do seu repositório no GitHub.
-
-2.  **Navegue até o Diretório do Projeto:**
-
-    Entre na pasta clonada:
-
-    ```bash
-    cd hackathon_app
-    ```
-
-3.  **Crie e Ative o Ambiente Virtual:**
-
+2.  **Crie um Ambiente Virtual:**
     É altamente recomendado usar um ambiente virtual para isolar as dependências do projeto.
+    ```bash
+    python -m venv venv
+    ```
 
-    * **No Windows:**
+3.  **Ative o Ambiente Virtual:**
 
-        ```bash
-        python -m venv venv
+    * **No Windows (Prompt de Comando):**
+        ```cmd
+        venv\Scripts\activate
+        ```
+    * **No Windows (PowerShell):**
+        ```powershell
         .\venv\Scripts\activate
         ```
-
-    * **No macOS e Linux:**
-
+    * **No macOS e Linux (Bash/Zsh):**
         ```bash
-        python3 -m venv venv
         source venv/bin/activate
         ```
-
-    Você verá o nome do ambiente virtual (`venv`) no início da linha do seu terminal, indicando que ele está ativo.
+    Você verá `(venv)` no início da linha do seu terminal, indicando que o ambiente virtual está ativo.
 
 4.  **Instale as Dependências:**
+    Com o ambiente virtual ativo, instale as bibliotecas Python necessárias. Certifique-se de que você tem um arquivo `requirements.txt` na raiz do seu projeto listando as dependências. Se não tiver, crie um rodando `pip freeze > requirements.txt` após instalar as bibliotecas que você usa (Flask, Flask-SQLAlchemy, Flask-Migrate, PyMySQL, python-dotenv, Flask-Login, cryptography, Werkzeug).
 
-    Com o ambiente virtual ativo, instale as bibliotecas necessárias listadas no `requirements.txt`:
-
+    Um `requirements.txt` típico para este projeto conteria:
+    ```
+    Flask
+    Flask-SQLAlchemy
+    Flask-Migrate
+    PyMySQL
+    python-dotenv
+    Flask-Login
+    cryptography
+    Werkzeug
+    ```
+    Instale-as com:
     ```bash
     pip install -r requirements.txt
     ```
 
-5.  **Configuração do Banco de Dados:**
-
-    A aplicação usa o SQLAlchemy para interagir com o banco de dados e lê a string de conexão da variável de ambiente `DATABASE_URL`, configurada no arquivo `.env`.
-
-    * Crie um arquivo na raiz do projeto chamado `.env`.
-    * Edite o arquivo `.env` e adicione a sua string de conexão do banco de dados no formato `DATABASE_URL="..."`.
-
-    **Exemplo para MySQL:**
+5.  **Crie o Arquivo de Configuração de Ambiente (`.env`):**
+    Na raiz do seu projeto, crie um arquivo chamado `.env`. Este arquivo armazenará configurações sensíveis e específicas do ambiente.
 
     ```dotenv
-    SECRET_KEY='sua_chave_secreta_aqui'
-    DATABASE_URL="mysql+pymysql://seu_usuario:sua_senha@seu_host:sua_porta/hackton"
+    # .env
+
+    SECRET_KEY='sua_chave_secreta_aqui' # Gere uma chave aleatória forte e única
+    DATABASE_URL='mysql+pymysql://usuario_mysql:senha_mysql@host_mysql:porta_mysql/nome_do_banco_de_dados'
+
+    # Exemplo para MySQL Local:
+    # DATABASE_URL='mysql+pymysql://root:sua_senha_do_root@localhost:3306/hackton'
+
+    # Opcional: Credenciais Admin Padrão (se você adicionar lógica para criá-lo via CLI)
+    # DEFAULT_ADMIN_USERNAME='admin'
+    # DEFAULT_ADMIN_PASSWORD='senha_inicial'
     ```
-    Substitua `seu_usuario`, `sua_senha`, `seu_host`, `sua_porta` (geralmente 3306) com as suas credenciais do MySQL.
-    **Importante:** Certifique-se de que o banco de dados chamado `hackton` já existe no seu servidor MySQL e que o `seu_usuario` tem permissões para criar tabelas nele. (Consulte as instruções anteriores sobre como criar o banco de dados MySQL manualmente se ainda não o fez).
+    * Substitua `sua_chave_secreta_aqui` por uma string aleatória e segura.
+    * Substitua os valores em `DATABASE_URL` pelas credenciais e detalhes de conexão do seu servidor MySQL local. Certifique-se de que o `usuario_mysql` tem permissão para criar tabelas no `nome_do_banco_de_dados`.
 
-    **Exemplo para SQLite (para teste rápido, não recomendado para produção):**
+6.  **Configure a Variável de Ambiente `FLASK_APP`:**
+    Esta variável diz ao comando `flask` onde encontrar sua aplicação. Execute o comando apropriado para o seu shell (com o ambiente virtual ativo):
 
-    ```dotenv
-    SECRET_KEY='sua_chave_secreta_aqui'
-    DATABASE_URL="sqlite:///app.db"
-    ```
-    Neste caso, um arquivo `app.db` será criado na raiz do projeto.
-
-    **Não se esqueça de definir uma `SECRET_KEY` forte e única!**
-
-6.  **Inicialize o Banco de Dados (Crie as Tabelas):**
-
-    Na primeira vez que você rodar a aplicação, as tabelas do banco de dados precisam ser criadas.
-
-    * Abra o arquivo `app.py`.
-    * Localize o bloco `with app.app_context():`.
-    * **Descomente** a linha `db.create_all()` dentro deste bloco.
-
-        ```python
-        with app.app_context():
-            # Comentar após a primeira execução ou usar Flask-Migrate
-            db.create_all() # <--- Descomente esta linha na primeira vez
-            print("Verifique se as tabelas foram criadas no banco de dados 'Hackton'.")
-            # ... (código para criar admin inicial)
+    * **No Windows (Prompt de Comando):**
+        ```cmd
+        set FLASK_APP=app
         ```
+    * **No Windows (PowerShell):**
+        ```powershell
+        $env:FLASK_APP="app"
+        ```
+    * **No macOS e Linux (Bash/Zsh):**
+        ```bash
+        export FLASK_APP=app
+        ```
+    Você precisará executar este comando em cada nova sessão do terminal.
 
-    * Rode a aplicação uma vez para que as tabelas sejam criadas (veja o próximo passo).
-    * **Após a primeira execução bem-sucedida (verifique se as tabelas foram criadas no seu banco de dados), COMENTE NOVAMENTE** a linha `db.create_all()` para evitar tentar recriar as tabelas em execuções futuras.
+## Configuração do Banco de Dados
 
-    * **(Opcional - Criar Usuário Admin Inicial):** Se você quiser um usuário administrador padrão, descomente o bloco de código abaixo de `db.create_all()` no `app.py` na **primeira execução** e lembre-se de **trocar a senha padrão**!
+A aplicação usa o MySQL e gerencia a estrutura do banco de dados com o Flask-Migrate.
 
-7.  **Execute a Aplicação Flask:**
+1.  **Crie o Banco de Dados MySQL:**
+    No seu servidor MySQL, crie um banco de dados com o mesmo nome especificado na sua `DATABASE_URL` no arquivo `.env` (por exemplo, `hackton`). Você pode fazer isso usando um cliente MySQL (MySQL Workbench, DBeaver, linha de comando `mysql`, etc.).
 
-    Com o ambiente virtual ativo e o banco de dados configurado/inicializado, você pode rodar a aplicação:
-
-    ```bash
-    flask run
+    Exemplo usando a linha de comando MySQL:
+    ```sql
+    CREATE DATABASE hackton CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
     ```
-    ou
-    ```bash
-    python app.py
-    ```
 
-    A aplicação deverá iniciar e indicar o endereço local onde está rodando (geralmente `http://127.0.0.1:5000/`).
+2.  **Execute as Migrações do Banco de Dados:**
+    Na pasta raiz do projeto, com o ambiente virtual ativo e `FLASK_APP` configurado, execute os comandos do Flask-Migrate na seguinte ordem:
 
-8.  **Acesse a Aplicação:**
+    * **Inicialize o repositório de migrações (rode apenas na primeira vez):**
+        ```bash
+        flask db init
+        ```
+        Isso criará a pasta `migrations/`.
 
-    Abra seu navegador e visite:
+    * **Gere o script da migração inicial (rode sempre que alterar seus modelos em `models.py`):**
+        ```bash
+        flask db migrate -m "create initial tables"
+        ```
+        Isso criará um novo arquivo Python na pasta `migrations/versions/`.
 
-    * Página inicial: `http://127.0.0.1:5000/`
-    * Login do Administrador: `http://127.0.0.1:5000/auth/login`
+    * **Aplique as migrações ao banco de dados (rode para criar/atualizar as tabelas):**
+        ```bash
+        flask db upgrade
+        ```
+        Este comando se conectará ao seu banco de dados (usando a `DATABASE_URL` do `.env`) e executará o script gerado para criar todas as suas tabelas.
 
-## Como Usar
+    Se `flask db upgrade` rodar sem erros, suas tabelas estarão prontas no banco de dados.
+    
 
-## Guia de Uso
-
-Este guia explica os passos básicos para administradores e participantes utilizarem a aplicação.
-
-### Para Administradores
-
-1.  **Acesse a Área Administrativa:** Navegue até a página de login do administrador, geralmente em `/auth/login`. Use suas credenciais de administrador para entrar.
-
-2.  **Dashboard do Admin:** Após o login, você será redirecionado para o Dashboard do Admin (`/admin/dashboard`), onde verá uma lista das salas existentes (se houver).
-
-3.  **Crie uma Nova Sala:**
-    * No Dashboard, clique no botão "Criar Nova Sala".
-    * Na página de criação, insira um nome para a sala (ex: "Hackathon de Inovação", "Quiz de Tecnologia").
-    * Clique em "Criar Sala".
-
-4.  **Obtenha o Código da Sala:** Após criar a sala, você será redirecionado de volta para o Dashboard ou para a página de gerenciamento da sala. O código único de 6 dígitos gerado para a sala será exibido (por exemplo, no Dashboard, ao lado do nome da sala). Este código é o que os participantes usarão para entrar.
-
-5.  **Adicione Perguntas (Gerenciar Sala):**
-    * No Dashboard, encontre a sala que você acabou de criar e clique no link "Gerenciar".
-    * Na página de gerenciamento da sala, você verá a opção para adicionar novas perguntas.
-    * Digite o texto da pergunta no campo e clique em "Adicionar Pergunta". Repita para adicionar todas as perguntas desejadas.
-    * Você também pode ativar/desativar a sala ou excluí-la nesta página.
-
-### Para Participantes
-
-1.  **Acesse a Página Inicial:** Abra a aplicação no seu navegador, geralmente em `http://127.0.0.1:5000/`.
-
-2.  **Entre em uma Sala:**
-    * Na página inicial, clique no botão "Participar Agora" (ou navegue diretamente para `/join`).
-    * Você será levado para a página "Entrar em uma Sala".
-    * Digite o seu nome.
-    * Insira o Código da Sala fornecido pelo administrador.
-    * Clique em "Entrar na Sala".
-
-3.  **Responda às Perguntas:**
-    * Se o código da sala for válido e a sala estiver ativa, você será redirecionado para a página de Perguntas (`/questions`).
-    * Leia cada pergunta e digite sua resposta no campo de texto correspondente.
-    * Depois de responder a todas as perguntas (ou as que desejar), clique no botão "Enviar Respostas" ao final da página.
-
-Suas respostas serão salvas, e o administrador poderá visualizá-las na área de gerenciamento da sala, clicando em "Ver Resultados".
-
-## Licença
-
-MIT
+    Aviso: no `app.py` e ficheiro `.env` tem campos que devem ler mudados.
