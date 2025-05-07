@@ -47,14 +47,19 @@ Siga estes passos para preparar seu ambiente de desenvolvimento:
 
     Um `requirements.txt` típico para este projeto conteria:
     ```
-    Flask
-    Flask-SQLAlchemy
-    Flask-Migrate
-    PyMySQL
-    python-dotenv
-    Flask-Login
-    cryptography
-    Werkzeug
+    Flask==3.0.0
+    Flask-SQLAlchemy==3.1.1
+    Flask-Login==0.6.3
+    Flask-WTF==1.2.1
+    Flask-Migrate==4.0.5  # Necessário para migrações do banco de dados
+    Flask-SocketIO==5.3.6  # Para funcionalidades em tempo real (usado no seu código)
+    PyMySQL==1.1.0  # Driver MySQL
+    python-dotenv==1.0.0  # Para .env
+    Werkzeug==3.0.1  # Hashing de senhas
+    email-validator==2.0.0  # Validação de e-mails (exigido pelo Flask-WTF)
+    Flask-Login>=0.6.0,<1.0.0
+    Flask-WTF>=1.2.0,<2.0.0
+    WTForms>=3.0.0,<4.0.0
     ```
     Instale-as com:
     ```bash
