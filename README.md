@@ -138,6 +138,18 @@ A aplicação usa o MySQL e gerencia a estrutura do banco de dados com o Flask-M
       Exemplo: flask db migrate -m "create new system" e depois faça o `flask db upgrade`
 
     Se `flask db upgrade` rodar sem erros, suas tabelas estarão prontas no banco de dados.
+
+3.  **Execute a web application:**
+
+    * **Começe a rodar o programa:**
+        ```bash
+        flask run
+        ```
+
+    * **Digite no navegador:**
+        ```bash
+        127.0.0.1:5000
+        ```
     
 
-    Aviso: no `app.py` e ficheiro `.env` tem campos que devem ler mudados.
+    Aviso: no `app.py` e ficheiro `.env` tem campos que devem ser mudados, favor ler bem toda documentação em caso de problemas.
