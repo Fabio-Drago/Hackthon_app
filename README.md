@@ -128,7 +128,9 @@ A aplicação usa o MySQL e gerencia a estrutura do banco de dados com o Flask-M
         ```bash
         flask db upgrade
         ```
-        Este comando se conectará ao seu banco de dados (usando a `DATABASE_URL` do `.env`) e executará o script gerado para criar todas as suas tabelas.
+        Este comando se conectará ao seu banco de dados (usando a `DATABASE_URL` do `.env`) e executará o script gerado para criar todas as suas tabelas ou atualizar e criar novas. Se tiver novas e quiser ver na base de dados, apenas vá atualizando com o flash db migrate "nome_da_sua_escolha" caso precise:
+
+      Exemplo: flask db migrate -m "create new system" e depois faça o `flask db upgrade`
 
     Se `flask db upgrade` rodar sem erros, suas tabelas estarão prontas no banco de dados.
     
