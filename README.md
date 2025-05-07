@@ -150,6 +150,9 @@ A aplicação usa o MySQL e gerencia a estrutura do banco de dados com o Flask-M
         ```bash
         127.0.0.1:5000
         ```
-    
+
+    **Outras informações:**
+
+    Não tem um admin? Use o comando custumizado: ´flask create-initial-admin´.
 
     Aviso: no `app.py` e ficheiro `.env` tem campos que devem ser mudados, favor ler bem toda documentação em caso de problemas.
