@@ -153,6 +153,6 @@ A aplicação usa o MySQL e gerencia a estrutura do banco de dados com o Flask-M
 
     **Outras informações:**
 
-    Não tem um admin? Use o comando custumizado: `flask create-initial-admin`.
+    Não tem um admin? Use o comando customizado: `flask create-initial-admin`.
 
     Aviso: no `app.py` e ficheiro `.env` tem campos que devem ser mudados, favor ler bem toda documentação em caso de problemas.
