@@ -159,8 +159,6 @@ Siga estes passos para configurar e executar o projeto localmente.
     * Página inicial: `http://127.0.0.1:5000/`
     * Login do Administrador: `http://127.0.0.1:5000/auth/login`
 
-Agora você tem as instruções detalhadas para a seção de instalação do seu README! Lembre-se de adaptar a URL do repositório e as configurações do banco de dados conforme o seu ambiente.
-
 ## Como Usar
 
 ## Guia de Uso
