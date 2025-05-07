@@ -66,7 +66,7 @@ Siga estes passos para preparar seu ambiente de desenvolvimento:
     pip install -r requirements.txt
     ```
 
-5.  **Crie o Arquivo de Configuração de Ambiente (`.env`):**
+5.  **Se não tiver, crie o Arquivo de Configuração de Ambiente (`.env`):**
     Na raiz do seu projeto, crie um arquivo chamado `.env`. Este arquivo armazenará configurações sensíveis e específicas do ambiente.
 
     ```dotenv
