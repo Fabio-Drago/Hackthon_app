@@ -155,4 +155,6 @@ A aplicação usa o MySQL e gerencia a estrutura do banco de dados com o Flask-M
 
     Não tem um admin? Use o comando customizado: `flask create-initial-admin`.
 
+    Quer fazer login como admin? Isso é feito em: `http://127.0.0.1:5000/auth/login`
+
     Aviso: no `app.py` e ficheiro `.env` tem campos que devem ser mudados, favor ler bem toda documentação em caso de problemas.
