@@ -7,8 +7,9 @@
 Para configurar e rodar esta aplicação, você precisará ter instalado em seu sistema:
 
 * **Python 3.7+**
-* **MySQL Server** (ou MariaDB)
+* **MySQL Server**
 * **Git**
+* **Ou podes usar um serviço de Platform as a Service - PaaS, no meu caso eu uso "pythonanywhere"**
 
 ## Configuração do Ambiente
 
