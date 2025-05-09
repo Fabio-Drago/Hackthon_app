@@ -1,6 +1,6 @@
 # Hackathon app
 
-Breve descrição sobre o seu projeto de Hackathon (ex: Uma aplicação web para gerenciar salas de hackathon, perguntas e respostas de participantes).
+![Captura de tela 2025-05-09 132413](https://github.com/user-attachments/assets/c938ca3b-f854-4ede-b613-917fd182ad6a)
 
 ## Requisitos
 
