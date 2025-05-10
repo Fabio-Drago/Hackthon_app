@@ -2,7 +2,7 @@
 
 ![Captura de tela 2025-05-09 132413](https://github.com/user-attachments/assets/c938ca3b-f854-4ede-b613-917fd182ad6a)
 
-Nota: esta web application não terá atualizações durante algum tempo provalvemente.
+Nota: esta aplicação web provavelmente não receberá atualizações por algum tempo.
 Visite e teste aqui: https://deadpan.pythonanywhere.com
 
 ## Sobre o Projeto
