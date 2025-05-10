@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - Hackathon App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block head_extra %}{% endblock %}
+    <style>
+        /* Estilos específicos para o header e navegação */
+        .header {
+            background-color: rgba(20, 20, 35, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 2rem;
+        }
+
+        .site-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, #4a90e2, #6a5acd);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 10px rgba(106, 90, 205, 0.5);
+        }
+
+        .logo-icon:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.5rem;
+            height: 1.5rem;
+            background-color: rgba(20, 20, 35, 0.9);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .site-title a {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            text-shadow: 0 0 5px rgba(106, 90, 205, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        .site-title a:hover {
+            color: #6a5acd;
+            text-shadow: 0 0 8px rgba(106, 90, 205, 1);
+        }
+
+        /* Navegação */
+        .navigation {
+            display: flex;
+            align-items: center;
+        }
+
+        .navigation ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 0.5rem;
+        }
+
+        .navigation li {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Para todos os links e botões no header */
+        .nav-item {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            font-weight: 500;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            height: 40px;
+            line-height: 1.5;
+            white-space: nowrap;
+        }
+
+        /* Estilos dos links de navegação */
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            background-color: rgba(70, 70, 120, 0.3);
+            border: 1px solid rgba(106, 90, 205, 0.3);
+        }
+
+        .nav-link:hover, .nav-link:focus {
+            color: #fff;
+            background-color: rgba(106, 90, 205, 0.5);
+            border-color: rgba(106, 90, 205, 0.7);
+            box-shadow: 0 0 8px rgba(106, 90, 205, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Estilo para o botão de logout */
+        .nav-logout {
+            color: rgba(255, 255, 255, 0.85);
+            background-color: rgba(203, 67, 53, 0.3);
+            border: 1px solid rgba(203, 67, 53, 0.5);
+        }
+
+        .nav-logout:hover, .nav-logout:focus {
+            color: #fff;
+            background-color: rgba(203, 67, 53, 0.6);
+            border-color: rgba(203, 67, 53, 0.8);
+            box-shadow: 0 0 8px rgba(203, 67, 53, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Estilos para o bloco do usuário */
+        .user-block {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-right: 1rem;
+            padding: 0.6rem 1rem;
+            background-color: rgba(50, 50, 80, 0.4);
+            border-radius: 4px;
+            border: 1px solid rgba(106, 90, 205, 0.3);
+        }
+
+        .user-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a90e2, #6a5acd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(106, 90, 205, 0.7);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-info .welcome {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .user-info .username {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Menu dropdown para admin - só visível quando admin está logado */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: rgba(30, 30, 50, 0.95);
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            border-radius: 4px;
+            z-index: 1;
+            border: 1px solid rgba(106, 90, 205, 0.4);
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.7rem 1rem;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(106, 90, 205, 0.3);
+            color: white;
+        }
+
+        /* Menu mobile */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 101;
+        }
+
+        .hamburger {
+            width: 1.8rem;
+            height: 1.5rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        /* Menu mobile toggle animação */
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(10px) rotate(45deg);
+        }
+        
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-10px) rotate(-45deg);
+        }
+
+        /* Media queries para responsividade */
+        @media (max-width: 992px) {
+            .header-container {
+                padding: 0.8rem 1rem;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+
+            .navigation {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                background-color: rgba(20, 20, 35, 0.98);
+                box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+                padding: 5rem 1rem 1rem;
+                overflow-y: auto;
+                transition: right 0.3s ease;
+                z-index: 100;
+            }
+
+            .navigation.active {
+                right: 0;
+            }
+
+            .navigation ul {
+                flex-direction: column;
+                width: 100%;
+                gap: 1rem;
+            }
+
+            .navigation li {
+                width: 100%;
+            }
+
+            .nav-item {
+                width: 100%;
+                min-width: unset;
+                text-align: left;
+                padding: 0.8rem 1rem;
+            }
+
+            .user-block {
+                margin-bottom: 1.5rem;
+                width: 100%;
+                justify-content: flex-start;
+                padding: 1rem;
+            }
+
+            /* Dropdown para mobile */
+            .dropdown-content {
+                position: static;
+                display: none;
+                margin: 0.8rem 0 0 1rem;
+                box-shadow: none;
+                border-left: 2px solid rgba(106, 90, 205, 0.5);
+                width: calc(100% - 1rem);
+                background-color: rgba(40, 40, 70, 0.6);
+            }
+
+            .dropdown.active .dropdown-content {
+                display: block;
+            }
+
+            .dropdown {
+                width: 100%;
+            }
+
+            .dropdown .nav-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .dropdown .nav-item::after {
+                content: "▼";
+                font-size: 0.7rem;
+                margin-left: 0.5rem;
+                transition: transform 0.3s ease;
+            }
+
+            .dropdown.active .nav-item::after {
+                transform: rotate(180deg);
+            }
+            
+            /* Overlay para quando o menu estiver aberto */
+            .menu-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 99;
+            }
+            
+            .menu-overlay.active {
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .site-title a {
+                font-size: 1.2rem;
+            }
+            
+            .logo-icon {
+                width: 2rem;
+                height: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-overlay" id="menu-overlay"></div>
+    
+    <header class="header">
+        <div class="container header-container">
+            <div class="site-logo">
+                <div class="logo-icon"></div>
+                <div class="site-title"><a href="{{ url_for('index') }}">Hackathon App</a></div>
+            </div>
+
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation menu">
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+
+            <nav class="navigation" id="navigation">
+                <ul>
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                        <!-- APENAS ADMIN: Exibe bloco do usuário admin + opções admin -->
+                        <li class="user-block">
+                            <div class="user-icon">
+                                {% if hasattr(current_user, 'email') and current_user.email %}
+                                    {{ current_user.email[0]|upper }}
+                                {% elif hasattr(current_user, 'username') and current_user.username %}
+                                    {{ current_user.username[0]|upper }}
+                                {% else %}
+                                    A
+                                {% endif %}
+                            </div>
+                            <div class="user-info">
+                                <span class="welcome">Bem-vindo</span>
+                                <span class="username">
+                                    {% if hasattr(current_user, 'email') and current_user.email %}
+                                        {{ current_user.email }}
+                                    {% elif hasattr(current_user, 'username') and current_user.username %}
+                                        {{ current_user.username }}
+                                    {% else %}
+                                        Admin
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </li>
+                        
+                        <!-- Menu Admin Dropdown - APENAS para admins -->
+                        <li class="dropdown" id="admin-dropdown">
+                            <a href="#" class="nav-item nav-link">Administração</a>
+                            <div class="dropdown-content">
+                                <a href="{{ url_for('admin.dashboard') }}" class="dropdown-item">Dashboard</a>
+                                <a href="{{ url_for('admin.room_management') }}" class="dropdown-item">Gerenciar Salas</a>
+                                <a href="{{ url_for('admin.user_management') }}" class="dropdown-item">Usuários</a>
+                                <a href="{{ url_for('admin.reports') }}" class="dropdown-item">Relatórios</a>
+                            </div>
+                        </li>
+                        
+                        <li><a href="{{ url_for('participant.join_room_route') }}" class="nav-item nav-link">Participar de Sala</a></li>
+                        <li><a href="{{ url_for('logout') }}" class="nav-item nav-logout" id="logout-link">Sair</a></li>
+                        
+                    {% elif 'participant_account_id' in session %}
+                        <!-- APENAS PARTICIPANTE: Exibe bloco do usuário participante + ações básicas -->
+                        <li class="user-block">
+                            <div class="user-icon">
+                                {% if session.get('participant_name') %}
+                                    {{ session['participant_name'][0]|upper }}
+                                {% else %}
+                                    P
+                                {% endif %}
+                            </div>
+                            <div class="user-info">
+                                <span class="welcome">Bem-vindo</span>
+                                <span class="username">
+                                    {% if session.get('participant_name') %}
+                                        {{ session['participant_name'] }}
+                                    {% else %}
+                                        Participante
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </li>
+                        
+                        <!-- Apenas opções de participante - SEM menção a admin -->
+                        <li><a href="{{ url_for('participant.join_room_route') }}" class="nav-item nav-link">Participar de Sala</a></li>
+                        <li><a href="{{ url_for('logout') }}" class="nav-item nav-logout" id="logout-link">Sair</a></li>
+                        
+                    {% else %}
+                        <!-- PÚBLICO: Apenas botão para participar da sala -->
+                        <li><a href="{{ url_for('participant.join_room_route') }}" class="nav-item nav-link">Participar de Sala</a></li>
+                        <!-- Link de admin removido do header para maior segurança/discrição -->
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container">
+                    <ul class="flashes">
+                        {% for category, message in messages %}
+                            <li class="{{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="{{ url_for('terms_and_conditions') }}">Termos e Condições</a>
+            </div>
+            <div class="footer-copyright">
+                © 2025 Hackathon App. Todos os direitos reservados.
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts_extra %}{% endblock %}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Menu mobile toggle
+            const menuToggle = document.getElementById('menu-toggle');
+            const navigation = document.getElementById('navigation');
+            const hamburger = document.getElementById('hamburger');
+            const menuOverlay = document.getElementById('menu-overlay');
+            const body = document.body;
+
+            if (menuToggle && navigation && hamburger && menuOverlay) {
+                menuToggle.addEventListener('click', function() {
+                    navigation.classList.toggle('active');
+                    hamburger.classList.toggle('active');
+                    menuOverlay.classList.toggle('active');
+                    body.style.overflow = navigation.classList.contains('active') ? 'hidden' : '';
+                });
+                
+                menuOverlay.addEventListener('click', function() {
+                    navigation.classList.remove('active');
+                    hamburger.classList.remove('active');
+                    menuOverlay.classList.remove('active');
+                    body.style.overflow = '';
+                });
+            }
+
+            // Dropdown toggle para mobile
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            if (window.innerWidth <= 992) {
+                dropdowns.forEach(dropdown => {
+                    const dropdownLink = dropdown.querySelector('.nav-link');
+                    if (dropdownLink) {
+                        dropdownLink.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            dropdown.classList.toggle('active');
+                        });
+                    }
+                });
+            }
+            
+            // Fechar menu ao clicar em um link (para melhor UX)
+            const navLinks = document.querySelectorAll('.nav-link:not(.dropdown .nav-link), .nav-logout, .dropdown-item');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 992) {
+                        setTimeout(() => {
+                            navigation.classList.remove('active');
+                            hamburger.classList.remove('active');
+                            menuOverlay.classList.remove('active');
+                            body.style.overflow = '';
+                        }, 100);
+                    }
+                });
+            });
+            
+            // Reajustar para caso a tela seja redimensionada
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 992) {
+                    navigation.classList.remove('active');
+                    hamburger.classList.remove('active');
+                    menuOverlay.classList.remove('active');
+                    body.style.overflow = '';
+                    
+                    // Remover os listeners de clique para os dropdowns em desktop
+                    dropdowns.forEach(dropdown => {
+                        const dropdownLink = dropdown.querySelector('.nav-link');
+                        if (dropdownLink) {
+                            dropdownLink.removeEventListener('click', function(){});
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

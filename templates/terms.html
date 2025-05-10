@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Hackathon App{% endblock %}
+
+{% block content %}
+<div class="content-container"> {# Usar a classe de container de conteúdo #}
+    <h2>Termos e Condições de Uso</h2>
+
+    <p>Bem-vindo ao Hackathon App. Ao utilizar nossa plataforma, você concorda com os seguintes termos e condições:</p>
+
+    <ol>
+        <li>Aceitação dos Termos: Ao acessar ou usar este site, você concorda em estar vinculado a estes Termos e Condições de Uso, a todas as leis e regulamentos aplicáveis, e concorda que é responsável pelo cumprimento de quaisquer leis locais aplicáveis.</li>
+        <li>Uso da Plataforma: A plataforma destina-se a fins de organização e participação em hackathons e sessões de Q&A. O uso indevido, tentativa de acesso não autorizado ou qualquer atividade que prejudique o funcionamento da plataforma é estritamente proibido.</li>
+        <li>Privacidade: Sua privacidade é importante para nós. Ao usar a plataforma, você concorda com a coleta e uso de informações conforme descrito em nossa Política de Privacidade (se houver uma).</li>
+        <li>Conteúdo do Usuário: Você é responsável por todo o conteúdo (respostas, nomes de participante, etc.) que submeter na plataforma. Não submeta conteúdo ofensivo, ilegal ou que viole os direitos de terceiros.</li>
+        <li>Isenção de Responsabilidade: A plataforma é fornecida "como está", sem garantias de qualquer tipo. Não nos responsabilizamos por quaisquer danos decorrentes do uso ou impossibilidade de uso da plataforma.</li>
+        <li>Modificações dos Termos: Podemos revisar estes termos a qualquer momento sem aviso prévio. Ao usar este site, você concorda em estar vinculado à versão atual destes Termos e Condições de Uso.</li>
+    </ol>
+
+    <p>Ao continuar a usar a plataforma, você indica sua aceitação destes termos.</p>
+
+     <p><a href="{{ url_for('index') }}">Voltar para a Página Inicial</a></p> {# Opcional: link de volta #}
+</div>
+{% endblock %}
