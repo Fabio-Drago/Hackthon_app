@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Hackathon App{% endblock %}
+
+{% block content %}
+<div class="content-container"> {# Usa a classe de container de conteúdo #}
+    <h2>{{ title }}</h2> {# Exibe o título da página #}
+
+    {# Exibe uma saudação com o email da conta logada, que é passado da rota #}
+    {% if participant_account_email %}
+        <p>Olá, <strong>{{ participant_account_email }}</strong>! Insira o código da sala para participar.</p>
+    {% else %}
+         {# Fallback message (não deve acontecer com o fluxo correto) #}
+         <p>Insira o código da sala para participar.</p>
+    {% endif %}
+
+    {# Formulário para entrar na sala usando Flask-WTF (agora só pede o código) #}
+    <form method="POST">
+        {{ form.csrf_token }} {# Campo oculto para proteção CSRF #}
+        {# CAMPO 'NAME' REMOVIDO - agora vem da conta logada #}
+        {# <div>
+            {{ form.name.label }}<br>
+            {{ form.name() }}
+            {% for error in form.name.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div> #}
+        <div>
+            {{ form.room_code.label }}<br> {# Label do campo Código da Sala #}
+            {{ form.room_code() }} {# Campo de input para o código da sala #}
+            {% for error in form.room_code.errors %} {# Exibe erros de validação #}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.submit() }} {# Botão de submit #}
+        </div>
+    </form>
+
+    {# Link para sair da conta de participante (aponta para a rota de logout genérica) #}
+    {# Corrigido de 'main.logout' para 'logout' #}
+    <p>Não é você? <a href="{{ url_for('logout') }}">Sair da conta</a></p>
+
+    <p><a href="{{ url_for('index') }}">Voltar para a Página Inicial</a></p> {# Link de volta #}
+</div>
+{% endblock %}

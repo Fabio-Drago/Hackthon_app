@@ -1,0 +1,399 @@
+{# templates/participant/answer_questions.html - Versão Melhorada e Inovadora #}
+
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Hackathon App{% endblock %}
+
+{% block head_extra %}
+{# Adicione links para CSS específico desta página ou estilos inline aqui, se necessário #}
+{# <link rel="stylesheet" href="{{ url_for('static', filename='css/participant_questions.css') }}"> #}
+<style>
+    /*
+    ATENÇÃO: As variáveis CSS no :root abaixo definem a paleta de cores e espaçamentos
+    usados NESTE template. Idealmente, estas variáveis DEVERIAM estar definidas
+    UMA VEZ no seu arquivo static/css/main.css para serem usadas globalmente.
+    Se já estiverem no main.css, você pode remover este bloco :root daqui.
+    */
+    :root {
+        /* Paleta de cores futurista azul escuro */
+        --color-primary: #00AAFF;
+        --color-primary-dark: #0077CC;
+        --color-secondary: #00FFDD;
+        --color-secondary-dark: #00CCBB;
+        --color-accent: #70EEFF;
+        --color-danger: #FF5577;
+        --color-success: #00DDAA;
+        --color-background: #0A1929;
+        --color-background-secondary: #0F2A43;
+        --color-card-background: #112240;
+        --color-text: #7FBBFF; /* Cor principal do texto */
+        --color-text-secondary: #5F99DD; /* Cor secundária do texto */
+        --color-text-light: #4477AA; /* Cor de texto mais clara */
+        --color-border: #1A3A5F;
+        --color-border-light: #234567;
+        --color-text-on-primary: #CCFFFF;
+        --color-text-on-secondary: #BBFFEE;
+        --color-text-on-danger: #FFE8EE;
+        --color-text-on-success: #AAFFEE;
+
+        /* Dimensões e espaçamentos */
+        --spacing-small: 8px;
+        --spacing-medium: 16px;
+        --spacing-large: 24px;
+        --spacing-xlarge: 32px;
+
+        /* Bordas e sombras */
+        --border-radius: 8px;
+        --border-radius-small: 4px;
+        --box-shadow: 0 2px 12px rgba(0, 170, 255, 0.2);
+        --box-shadow-hover: 0 4px 20px rgba(0, 170, 255, 0.4);
+
+        /* Tipografia */
+        --font-size-small: 0.875rem;
+        --font-size-normal: 1rem;
+        --font-size-large: 1.25rem;
+        --font-size-xlarge: 1.5rem;
+    }
+
+    /*
+    Os estilos para body e .content-container foram removidos daqui
+    e devem estar no seu static/css/main.css.
+    */
+    /*
+    body {
+        background-color: var(--color-background);
+        background-image: linear-gradient(45deg, #0A1929, #0F2A43);
+        color: var(--color-text);
+        font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+    }
+
+    .content-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--spacing-large);
+    }
+    */
+
+    /* Header da página (Título, Sala, Participante) */
+    .page-header {
+        margin-bottom: var(--spacing-xlarge);
+        padding-bottom: var(--spacing-medium);
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .page-header h2 {
+        margin-top: 0;
+        margin-bottom: var(--spacing-small);
+        font-size: var(--font-size-xlarge);
+        color: var(--color-primary-dark);
+        font-weight: 700;
+    }
+
+    .page-header p {
+        margin-top: 0;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-normal);
+        margin-bottom: var(--spacing-small);
+    }
+
+     .page-header p strong {
+        color: var(--color-accent); /* Cor de destaque para o email do participante */
+     }
+
+    .code-text {
+        font-weight: bold;
+        color: var(--color-accent);
+        padding: 2px 8px;
+        background-color: rgba(112, 238, 255, 0.1); /* Fundo levemente colorido */
+        border-radius: var(--border-radius-small);
+    }
+
+    /* Título da seção de respostas */
+     h3 {
+        margin-top: var(--spacing-large);
+        margin-bottom: var(--spacing-large);
+        color: var(--color-text);
+        font-size: var(--font-size-large);
+        font-weight: 600;
+        padding-bottom: var(--spacing-small);
+        border-bottom: 2px solid var(--color-primary);
+        display: inline-block;
+    }
+
+
+    /* Formulário principal de respostas */
+    .answer-form {
+        margin-top: var(--spacing-large);
+    }
+
+    /* Grid de cards de perguntas */
+    .questions-grid { /* Usando grid para organizar as perguntas */
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Layout responsivo */
+        gap: var(--spacing-large);
+        margin-bottom: var(--spacing-xlarge);
+        padding: 0; /* Remove padding padrão de lista */
+        list-style: none; /* Remove marcadores de lista */
+    }
+
+    .question-card {
+        background-color: var(--color-card-background);
+        background-image: linear-gradient(170deg, rgba(23, 50, 95, 0.7), rgba(10, 25, 41, 0.9));
+        padding: var(--spacing-large);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-left: 4px solid var(--color-secondary); /* Borda colorida na esquerda */
+        border: 1px solid rgba(0, 255, 221, 0.2);
+    }
+
+    .question-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--box-shadow-hover);
+        border: 1px solid rgba(0, 255, 221, 0.4);
+    }
+
+    .question-card h4 {
+        margin-top: 0;
+        margin-bottom: var(--spacing-small);
+        color: var(--color-primary); /* Cor primária para o número da pergunta */
+        font-size: var(--font-size-large);
+        font-weight: 600;
+    }
+
+    .question-card .question-text {
+        font-size: var(--font-size-normal);
+        color: var(--color-text);
+        margin-bottom: var(--spacing-medium);
+        flex-grow: 1; /* Permite que o texto da pergunta ocupe espaço */
+    }
+
+    .question-card textarea {
+        width: 100%; /* Ocupa a largura total do card */
+        padding: var(--spacing-medium);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-small);
+        font-size: var(--font-size-normal);
+        background-color: #0A1929; /* Fundo mais escuro para o input */
+        color: var(--color-text);
+        box-sizing: border-box; /* Inclui padding e borda na largura */
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        resize: vertical; /* Permite redimensionar verticalmente */
+        min-height: 120px; /* Altura mínima para a área de texto */
+    }
+
+    .question-card textarea::placeholder {
+        color: var(--color-text-light); /* Cor para o placeholder */
+        opacity: 0.8;
+    }
+
+    .question-card textarea:focus {
+        outline: none;
+        border-color: var(--color-secondary); /* Cor de foco secundária */
+        box-shadow: 0 0 0 2px rgba(0, 255, 221, 0.3);
+        background-color: #0F2A43; /* Fundo um pouco mais claro ao focar */
+    }
+
+    /* Estilo para o botão de submit */
+    .submit-answers-button-container {
+        margin-top: var(--spacing-large);
+        text-align: center; /* Centraliza o botão */
+    }
+
+    .submit-answers-button { /* Classe para o botão submit */
+         display: inline-flex; /* Permite alinhar ícone e texto */
+         align-items: center;
+         gap: var(--spacing-small); /* Espaço entre ícone e texto */
+         padding: var(--spacing-medium) var(--spacing-xlarge);
+         background-color: var(--color-success); /* Cor de sucesso */
+         color: var(--color-text-on-success);
+         text-decoration: none;
+         border-radius: var(--border-radius);
+         text-align: center;
+         font-weight: 600;
+         transition: background-color 0.2s ease, transform 0.1s ease;
+         border: none;
+         cursor: pointer;
+         font-size: var(--font-size-large); /* Botão maior */
+         text-transform: uppercase; /* Texto em maiúsculas */
+         letter-spacing: 1px;
+         box-shadow: var(--box-shadow);
+    }
+
+    .submit-answers-button:hover {
+        background-color: var(--color-secondary-dark); /* Cor de hover */
+        transform: translateY(-2px);
+        box-shadow: var(--box-shadow-hover);
+    }
+
+    .submit-answers-button:active {
+        transform: translateY(0);
+    }
+
+    .submit-answers-button svg {
+        stroke: var(--color-text-on-success); /* Cor do ícone */
+    }
+
+
+    /* Link para sair */
+    .logout-link-container {
+        margin-top: var(--spacing-xlarge);
+        text-align: center; /* Centraliza o link */
+    }
+
+    .logout-link { /* Classe para o link de sair */
+        color: var(--color-text-secondary);
+        text-decoration: underline;
+        font-size: var(--font-size-normal);
+        transition: color 0.2s ease;
+    }
+
+    .logout-link:hover {
+        color: var(--color-text);
+    }
+
+
+    /*
+    Os estilos para .alert e .text-center foram removidos daqui
+    e devem estar no seu static/css/main.css.
+    */
+    /*
+    .alert {
+        padding: var(--spacing-medium);
+        margin-bottom: var(--spacing-large);
+        border-radius: var(--border-radius);
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background-color: rgba(46, 204, 113, 0.1);
+        border-left: 4px solid var(--color-success);
+        color: #27ae60;
+    }
+
+    .alert-danger {
+        background-color: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid var(--color-danger);
+        color: #c0392b;
+    }
+
+    .alert-warning {
+        background-color: rgba(243, 156, 18, 0.1);
+        border-left: 4px solid var(--color-accent);
+        color: #d35400;
+    }
+
+    .text-center {
+        text-align: center;
+        color: var(--color-text-secondary);
+        font-style: italic;
+        margin: var(--spacing-xlarge) 0;
+    }
+    */
+
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .questions-grid {
+            grid-template-columns: 1fr; /* Uma coluna em telas menores */
+        }
+
+        .question-card textarea {
+             min-height: 100px; /* Altura mínima para textarea em mobile */
+         }
+
+        .submit-answers-button {
+             width: 100%; /* Botão submit ocupa largura total em mobile */
+             justify-content: center; /* Centraliza conteúdo do botão */
+        }
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-container">
+
+    {# Cabeçalho da Página #}
+    <div class="page-header">
+        <h2>{{ title }}</h2>
+        <p>Sala: {{ room.name }} (Código: <span class="code-text">{{ room.code }}</span>)</p>
+
+        {# Exibe o participante usando o email da conta logada #}
+        {% if participant_account_email %}
+            <p>Respondendo como: <strong>{{ participant_account_email }}</strong></p>
+        {% elif participant and participant.account and participant.account.email %}
+            {# Fallback #}
+            <p>Respondendo como: <strong>{{ participant.account.email }}</strong></p>
+        {% else %}
+            {# Fallback genérico #}
+            <p>Respondendo como: Participante (ID: {{ participant.id }})</p>
+        {% endif %}
+    </div>
+
+
+    {# Exibir mensagens flash #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+
+    {# Formulário principal para submeter as respostas #}
+    <form method="POST" class="answer-form"> {# Adicionada classe para estilizar o formulário #}
+        {{ form.csrf_token }} {# Proteção CSRF #}
+
+        <h3>Suas Respostas:</h3>
+
+        {# Lista de perguntas usando Grid de Cards #}
+        {% if questions %} {# Verifica se há perguntas na sala #}
+            <div class="questions-grid">
+                {% for question in questions %} {# Loop sobre as perguntas #}
+                    <div class="question-card">
+                        <h4>Pergunta {{ loop.index }}:</h4> {# Número da pergunta #}
+                        <div class="question-text">{{ question.text }}</div> {# Texto da pergunta #}
+                        {# Área de texto para a resposta. O nome do campo é dinâmico: question_<id_da_pergunta> #}
+                        {# O valor é pré-preenchido com a resposta existente, se houver #}
+                        <textarea name="question_{{ question.id }}" rows="4" placeholder="Sua resposta...">{{ existing_answers.get(question.id, '') }}</textarea>
+                    </div>
+                {% endfor %} {# Fim do loop de perguntas #}
+            </div>
+        {% else %} {# Mensagem se não houver perguntas #}
+            <p class="text-center">Ainda não há perguntas nesta sala.</p>
+        {% endif %}
+
+        {# Mostra o botão de enviar apenas se houver perguntas #}
+        {% if questions %}
+            <div class="submit-answers-button-container"> {# Contêiner para centralizar o botão #}
+                {# ### Aplicar classes de botão do CSS para o submit ### #}
+                {# O botão submit (do AnswerForm) precisa ter a classe submit-answers-button #}
+                 <button type="submit" class="submit-answers-button">
+                     {# Ícone de envio (send) - Usando SVG inline #}
+                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                     </svg>
+                     Enviar Respostas
+                 </button>
+            </div>
+        {% endif %}
+    </form>
+
+    {# Link para sair da conta/sala #}
+    <div class="logout-link-container"> {# Contêiner para centralizar o link #}
+        <a href="{{ url_for('logout') }}" class="logout-link">Sair da Conta/Sala</a>
+    </div>
+
+
+</div> {# Fim do content-container #}
+{% endblock %}
+
+{% block scripts_extra %}
+{# Nenhum script JavaScript específico é necessário para esta página no momento #}
+{% endblock %}

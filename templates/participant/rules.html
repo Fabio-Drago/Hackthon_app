@@ -1,1 +1,25 @@
+{% extends "base.html" %}
 
+{% block title %}{{ title }} - Hackathon App{% endblock %}
+
+{% block content %}
+<div class="content-container"> {# Usar a classe de container de conteúdo #}
+    <h2>Regras de Participação no Hackathon/Quiz</h2>
+
+    <p>Para garantir um ambiente justo e positivo para todos os participantes, pedimos que sigam as seguintes regras:</p>
+
+    <ul>
+        <li>É estritamente proibido o uso de hacks, cheats ou qualquer ferramenta não autorizada para obter vantagem injusta sobre outros participantes.</li>
+        <li>Não compartilhe códigos de sala ou respostas com outros participantes. A participação é individual.</li>
+        <li>Respeite outros participantes e administradores em todas as interações.</li>
+        <li>Não tente acessar áreas do site para as quais você não tem permissão.</li>
+        <li>Qualquer tentativa de trapaça ou comportamento inadequado resultará na desqualificação.</li>
+        <li>Se encontrar um bug ou falha de segurança, por favor, reporte-o aos administradores em vez de explorá-lo.</li>
+        <li>Siga quaisquer instruções adicionais fornecidas pelos administradores da sala.</li>
+    </ul>
+
+    <p>A violação destas regras pode levar à sua exclusão da sala ou do evento. Agradecemos sua cooperação!</p>
+
+    <p><a href="{{ url_for('index') }}">Voltar para a Página Inicial</a></p> {# Opcional: link de volta #}
+</div>
+{% endblock %}
