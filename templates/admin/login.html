@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Hackathon App{% endblock %}
+
+{% block content %}
+<div class="content-container"> {# Usa a classe de container de conteúdo #}
+    <h2>{{ title }}</h2> {# Exibe o título da página #}
+    {# Formulário de login usando Flask-WTF #}
+    <form method="POST">
+        {{ form.csrf_token }} {# Campo oculto para proteção CSRF #}
+        <div>
+            {{ form.username.label }}<br> {# Label do campo Usuário #}
+            {{ form.username() }} {# Campo de input para o usuário #}
+            {% for error in form.username.errors %} {# Exibe erros de validação #}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.password.label }}<br> {# Label do campo Senha #}
+            {{ form.password() }} {# Campo de input para a senha #}
+            {% for error in form.password.errors %} {# Exibe erros de validação #}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.submit() }} {# Botão de submit #}
+        </div>
+    </form>
+     <p><a href="{{ url_for('index') }}">Voltar para a Página Inicial</a></p> {# Link de volta #}
+</div>
+{% endblock %}

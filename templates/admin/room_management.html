@@ -1,0 +1,527 @@
+{# templates/admin/room_management.html - Versão Melhorada e Reorganizada #}
+
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Sala: {{ room.name }} - Hackathon App{% endblock %}
+
+{% block head_extra %}
+{# Adicione links para CSS específico desta página ou estilos inline aqui, se necessário #}
+{# Por exemplo, se você tiver um arquivo CSS para o gerenciamento de sala: #}
+{# <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_room_management.css') }}"> #}
+<style>
+    /*
+    ATENÇÃO: As variáveis CSS no :root abaixo definem a paleta de cores e espaçamentos
+    usados NESTE template. Idealmente, estas variáveis DEVERIAM estar definidas
+    UMA VEZ no seu arquivo static/css/main.css para serem usadas globalmente.
+    Se já estiverem no main.css, você pode remover este bloco :root daqui.
+    */
+    :root {
+        /* Paleta de cores futurista azul escuro */
+        --color-primary: #00AAFF;
+        --color-primary-dark: #0077CC;
+        --color-secondary: #00FFDD;
+        --color-secondary-dark: #00CCBB;
+        --color-accent: #70EEFF;
+        --color-danger: #FF5577;
+        --color-success: #00DDAA;
+        --color-background: #0A1929;
+        --color-background-secondary: #0F2A43;
+        --color-card-background: #112240;
+        --color-text: #7FBBFF;
+        --color-text-secondary: #5F99DD;
+        --color-text-light: #4477AA;
+        --color-border: #1A3A5F;
+        --color-border-light: #234567;
+        --color-text-on-primary: #CCFFFF;
+        --color-text-on-secondary: #BBFFEE;
+        --color-text-on-danger: #FFE8EE;
+        --color-text-on-success: #AAFFEE;
+
+        /* Dimensões e espaçamentos */
+        --spacing-small: 8px;
+        --spacing-medium: 16px;
+        --spacing-large: 24px;
+        --spacing-xlarge: 32px;
+
+        /* Bordas e sombras */
+        --border-radius: 8px;
+        --border-radius-small: 4px;
+        --box-shadow: 0 2px 12px rgba(0, 170, 255, 0.2);
+        --box-shadow-hover: 0 4px 20px rgba(0, 170, 255, 0.4);
+
+        /* Tipografia */
+        --font-size-small: 0.875rem;
+        --font-size-normal: 1rem;
+        --font-size-large: 1.25rem;
+        --font-size-xlarge: 1.5rem;
+    }
+
+    /*
+    Os estilos para body e .content-container foram removidos daqui
+    e devem estar no seu static/css/main.css.
+    */
+    /*
+    body {
+        background-color: var(--color-background);
+        background-image: linear-gradient(45deg, #0A1929, #0F2A43);
+        color: var(--color-text);
+        font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+    }
+
+    .content-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--spacing-large);
+    }
+    */
+
+    /* Header da página de gerenciamento */
+    .management-header {
+        margin-bottom: var(--spacing-xlarge);
+        padding-bottom: var(--spacing-medium);
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .management-header h2 {
+        margin-top: 0;
+        margin-bottom: var(--spacing-small);
+        font-size: var(--font-size-xlarge);
+        color: var(--color-primary-dark);
+        font-weight: 700;
+    }
+
+    .management-header p {
+        margin-top: 0;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-normal);
+    }
+
+    .code-text {
+        font-weight: bold;
+        color: var(--color-accent);
+        padding: 2px 8px;
+        background-color: rgba(112, 238, 255, 0.1); /* Fundo levemente colorido */
+        border-radius: var(--border-radius-small);
+    }
+
+    /* Botão Verificar Respostas */
+    .view-results-button-container {
+        margin-bottom: var(--spacing-xlarge);
+    }
+
+     /*
+    Os estilos gerais para .btn-action e .create-room-btn foram removidos daqui.
+    Eles devem estar no seu static/css/main.css.
+    */
+    /*
+    .btn-action {
+        padding: var(--spacing-small) var(--spacing-medium);
+        border-radius: var(--border-radius-small);
+        text-decoration: none;
+        text-align: center;
+        font-weight: 500;
+        font-size: var(--font-size-small);
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-action:active {
+        transform: translateY(0);
+    }
+    */
+
+    /* Estilos de cores específicos para botões (podem ficar aqui ou em main.css) */
+     .btn-action {
+        padding: var(--spacing-small) var(--spacing-medium);
+        border-radius: var(--border-radius-small);
+        text-decoration: none;
+        text-align: center;
+        font-weight: 500;
+        font-size: var(--font-size-small);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: rgba(0, 140, 210, 0.3);
+        color: #00EEFF;
+        text-shadow: 0 0 5px rgba(0, 238, 255, 0.5);
+        box-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
+        border: 1px solid rgba(0, 170, 255, 0.3);
+        letter-spacing: 0.5px;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px rgba(0, 238, 255, 0.5);
+        background-color: rgba(0, 170, 255, 0.4);
+        border: 1px solid rgba(0, 238, 255, 0.6);
+        text-shadow: 0 0 8px rgba(0, 238, 255, 0.8);
+    }
+
+    .btn-action:active {
+        transform: translateY(0);
+    }
+
+    .view-results-btn {
+        background-color: var(--color-primary);
+        color: var(--color-text-on-primary);
+    }
+
+    .view-results-btn:hover {
+        background-color: var(--color-primary-dark);
+    }
+
+    .delete-question-link { /* Classe para o link de deletar pergunta */
+        background-color: var(--color-danger);
+        color: var(--color-text-on-danger);
+    }
+
+    .delete-question-link:hover {
+        background-color: #c0392b; /* Cor de hover mais escura para perigo */
+    }
+
+
+    /* Título da seção de perguntas */
+    h3 {
+        margin-top: var(--spacing-large);
+        margin-bottom: var(--spacing-large);
+        color: var(--color-text);
+        font-size: var(--font-size-large);
+        font-weight: 600;
+        padding-bottom: var(--spacing-small);
+        border-bottom: 2px solid var(--color-primary);
+        display: inline-block;
+    }
+
+    /* Grid de cards de perguntas */
+    .questions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Ajustado para perguntas */
+        gap: var(--spacing-large);
+        margin-bottom: var(--spacing-xlarge);
+    }
+
+    .question-card {
+        background-color: var(--color-card-background);
+        background-image: linear-gradient(170deg, rgba(23, 50, 95, 0.7), rgba(10, 25, 41, 0.9));
+        padding: var(--spacing-large);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-left: 4px solid var(--color-secondary); /* Borda colorida na esquerda */
+        border: 1px solid rgba(0, 255, 221, 0.2);
+    }
+
+     .question-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--box-shadow-hover);
+        border: 1px solid rgba(0, 255, 221, 0.4);
+    }
+
+    .question-card .question-number {
+        font-size: var(--font-size-small);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--spacing-small);
+    }
+
+    .question-card .question-text {
+        font-size: var(--font-size-normal);
+        color: var(--color-text);
+        margin-bottom: var(--spacing-medium);
+        flex-grow: 1; /* Permite que o texto ocupe espaço */
+    }
+
+    .question-card .question-actions {
+        display: flex;
+        justify-content: flex-end; /* Alinha o botão à direita */
+        gap: var(--spacing-small);
+    }
+
+    /* Estilos para o formulário de adicionar pergunta */
+    .add-question-form {
+        background-color: var(--color-background-secondary);
+        padding: var(--spacing-large);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        margin-bottom: var(--spacing-xlarge);
+        border-top: 4px solid var(--color-secondary);
+    }
+
+    .add-question-form div {
+        margin-bottom: var(--spacing-medium);
+    }
+
+    .add-question-form label {
+        display: block; /* Label em sua própria linha */
+        margin-bottom: var(--spacing-small);
+        font-weight: 600;
+        color: var(--color-text);
+    }
+
+    .add-question-form textarea {
+        width: 100%; /* Ocupa a largura total */
+        padding: var(--spacing-small) var(--spacing-medium);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-small);
+        font-size: var(--font-size-normal);
+        background-color: var(--color-card-background); /* Fundo escuro */
+        color: var(--color-text);
+        box-sizing: border-box; /* Inclui padding e borda na largura */
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        resize: vertical; /* Permite redimensionar verticalmente */
+    }
+
+     .add-question-form textarea:focus {
+        outline: none;
+        border-color: var(--color-secondary);
+        box-shadow: 0 0 0 2px rgba(0, 255, 221, 0.3);
+    }
+
+    .add-question-form .submit-button { /* Classe para o botão submit do formulário */
+         display: inline-block;
+         padding: var(--spacing-small) var(--spacing-large);
+         background-color: var(--color-secondary); /* Cor secundária para adicionar */
+         color: var(--color-text-on-secondary);
+         text-decoration: none;
+         border-radius: var(--border-radius);
+         text-align: center;
+         font-weight: 600;
+         transition: background-color 0.2s ease, transform 0.1s ease;
+         border: none;
+         cursor: pointer;
+         font-size: var(--font-size-normal);
+    }
+
+     .add-question-form .submit-button:hover {
+        background-color: var(--color-secondary-dark);
+        transform: translateY(-2px);
+    }
+
+
+    /* Estilos para erros de validação */
+    .validation-error {
+        color: var(--color-danger);
+        font-size: var(--font-size-small);
+        margin-top: var(--spacing-small);
+        display: block; /* Cada erro em sua linha */
+    }
+
+    /* Link de volta para o dashboard */
+    .back-link {
+        display: inline-block;
+        margin-top: var(--spacing-large);
+        color: var(--color-text-secondary);
+        text-decoration: underline;
+        font-size: var(--font-size-normal);
+    }
+
+    .back-link:hover {
+        color: var(--color-text);
+    }
+
+
+    /*
+    Os estilos para .alert e .text-center foram removidos daqui
+    e devem estar no seu static/css/main.css.
+    */
+    /*
+    .alert {
+        padding: var(--spacing-medium);
+        margin-bottom: var(--spacing-large);
+        border-radius: var(--border-radius);
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background-color: rgba(46, 204, 113, 0.1);
+        border-left: 4px solid var(--color-success);
+        color: #27ae60;
+    }
+
+    .alert-danger {
+        background-color: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid var(--color-danger);
+        color: #c0392b;
+    }
+
+    .alert-warning {
+        background-color: rgba(243, 156, 18, 0.1);
+        border-left: 4px solid var(--color-accent);
+        color: #d35400;
+    }
+
+    .text-center {
+        text-align: center;
+        color: var(--color-text-secondary);
+        font-style: italic;
+        margin: var(--spacing-xlarge) 0;
+    }
+    */
+
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .questions-grid {
+            grid-template-columns: 1fr; /* Uma coluna em telas menores */
+        }
+
+        .question-card .question-actions {
+            justify-content: center; /* Centraliza o botão em telas menores */
+        }
+
+         .add-question-form textarea {
+             min-height: 100px; /* Altura mínima para textarea em mobile */
+         }
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-container">
+
+    {# Cabeçalho da Página de Gerenciamento #}
+    <div class="management-header">
+        <h2>Gerenciar Sala: {{ room.name }}</h2>
+        <p>Código: <span class="code-text">{{ room.code }}</span></p>
+        <p>Status: {{ "Ativa" if room.is_active else "Desativada" }}</p>
+    </div>
+
+    {# Exibir mensagens flash #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {# Botão "Verificar Respostas" #}
+    <div class="view-results-button-container">
+        <a href="{{ url_for('admin.view_results', room_id=room.id) }}" class="btn-action view-results-btn">
+             {# Ícone de resultados (arquivo) - Usando SVG inline #}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 5px;">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Verificar Respostas
+        </a>
+    </div>
+
+
+    {# Seção de Perguntas (Usando Cards) #}
+    <h3>Perguntas</h3>
+
+    {% if questions %} {# Verifica se há perguntas para exibir #}
+        {# ### Layout em Grid para os Cards de Pergunta ### #}
+        <div class="questions-grid">
+            {% for question in questions %}
+                <div class="question-card">
+                    <div class="question-number">Pergunta #{{ loop.index }}</div> {# Número da pergunta #}
+                    <div class="question-text">{{ question.text }}</div> {# Texto da pergunta #}
+
+                    {# Ações para a Pergunta Específica #}
+                    <div class="question-actions">
+                        {# ### Link (<a>) com JavaScript para enviar POST para Deletar Pergunta ### #}
+                        {# A rota 'admin.delete_question' espera um método POST. Um link <a> envia GET por padrão. #}
+                        {# Adicionamos a classe 'delete-question-link' para o JavaScript identificá-lo. #}
+                        {# O href aponta para a URL de exclusão da pergunta. #}
+                        <a href="{{ url_for('admin.delete_question', question_id=question.id) }}"
+                           class="btn-action delete-question-link" {# Classe para o JS e estilo de perigo #}
+                           onclick="return confirm('Tem certeza que deseja excluir esta pergunta?');"> {# Mantido o confirm #}
+                            {# Ícone de lixo (trash) - Usando SVG inline #}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 5px;">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                           Deletar
+                        </a>
+                        {# ### Fim: Link (<a>) com JS para POST ### #}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %} {# Mensagem se não houver perguntas #}
+        <p class="text-center">Nenhuma pergunta adicionada ainda.</p>
+    {% endif %}
+    {# ### Fim da Seção de Perguntas ### #}
+
+
+    {# Seção para Adicionar Nova Pergunta #}
+    <h3>Adicionar Nova Pergunta</h3>
+    {# Formulário para adicionar nova pergunta - Usando a nova estrutura de formulário #}
+    <form method="POST" class="add-question-form"> {# Adicionada classe para estilizar o formulário #}
+        {{ question_form.csrf_token }} {# Proteção CSRF #}
+        {{ question_form.room_id() }} {# Campo hidden para o ID da sala #}
+
+        <div>
+            {{ question_form.text.label }}<br> {# Label do campo de texto da pergunta #}
+            {# ### Aplicar classes/estilos de input do CSS ### #}
+            {{ question_form.text(rows=4, cols=50) }} {# Campo de texto da pergunta #}
+            {% for error in question_form.text.errors %} {# Exibe erros de validação #}
+                {# ### Usar classe CSS para erros de validação ### #}
+                <span class="validation-error">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div>
+            {# ### Aplicar classes de botão do CSS para o submit ### #}
+            {{ question_form.submit(class="submit-button") }} {# Adicionada classe para estilizar o botão submit #}
+        </div>
+    </form>
+    {# ### Fim da Seção para Adicionar Nova Pergunta ### #}
+
+
+    {# Link de volta para o dashboard #}
+    <p><a href="{{ url_for('admin.dashboard') }}" class="back-link">Voltar para o Dashboard</a></p>
+
+{# ### Fim do content-container ### #}
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Script para links de exclusão de PERGUNTA com método POST
+        // Encontra todos os links com a classe 'delete-question-link'
+        const deleteLinks = document.querySelectorAll('.delete-question-link');
+
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                // O confirm já é tratado pelo onclick no HTML.
+                if (this.onclick && this.onclick() === false) {
+                     return; // Se o confirm retornou false, para aqui.
+                }
+
+                // Impede a ação padrão do link (navegar via GET)
+                event.preventDefault();
+
+                // Cria um formulário temporário dinamicamente
+                const form = document.createElement('form');
+                form.setAttribute('method', 'post'); // Define o método como POST
+                form.setAttribute('action', this.href); // Define a action como a URL do link
+
+                // Adiciona o formulário ao corpo do documento e o submete
+                document.body.appendChild(form);
+                form.submit();
+
+                // Opcional: Remover o formulário após a submissão (não estritamente necessário)
+                // form.remove();
+            });
+        });
+
+        // NOTA: O script de busca de salas do dashboard NÃO é necessário aqui.
+    });
+</script>
+{% endblock %}

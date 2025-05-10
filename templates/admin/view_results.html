@@ -1,0 +1,722 @@
+{% extends "base.html" %}
+
+{% block title %}Resultados da Sala: {{ room.name }} - Hackathon App{% endblock %}
+
+{% block head_extra %}
+<style>
+    /* Variáveis de estilo - consistentes com o dashboard */
+    :root {
+        /* Paleta de cores futurista azul escuro */
+        --color-primary: #00AAFF;
+        --color-primary-dark: #0077CC;
+        --color-secondary: #00FFDD;
+        --color-secondary-dark: #00CCBB;
+        --color-accent: #70EEFF;
+        --color-danger: #FF5577;
+        --color-success: #00DDAA;
+        --color-background: #0A1929;
+        --color-background-secondary: #0F2A43;
+        --color-card-background: #112240;
+        --color-text: #7FBBFF;
+        --color-text-secondary: #5F99DD;
+        --color-text-light: #4477AA;
+        --color-border: #1A3A5F;
+        --color-border-light: #234567;
+        
+        /* Dimensões e espaçamentos */
+        --spacing-small: 8px;
+        --spacing-medium: 16px;
+        --spacing-large: 24px;
+        --spacing-xlarge: 32px;
+        
+        /* Bordas e sombras */
+        --border-radius: 8px;
+        --border-radius-small: 4px;
+        --box-shadow: 0 2px 12px rgba(0, 170, 255, 0.2);
+        --box-shadow-hover: 0 4px 20px rgba(0, 170, 255, 0.4);
+        
+        /* Tipografia */
+        --font-size-small: 0.875rem;
+        --font-size-normal: 1rem;
+        --font-size-large: 1.25rem;
+        --font-size-xlarge: 1.5rem;
+    }
+    
+    /* Estilos do cabeçalho e container */
+    .content-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--spacing-large);
+    }
+    
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-large);
+        padding-bottom: var(--spacing-medium);
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    .results-header h2 {
+        margin: 0;
+        font-size: var(--font-size-xlarge);
+        color: var(--color-primary);
+        font-weight: 700;
+    }
+    
+    .room-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .code-text {
+        font-family: 'Consolas', monospace;
+        background-color: rgba(0, 170, 255, 0.1);
+        color: var(--color-accent);
+        padding: 2px 8px;
+        border-radius: var(--border-radius-small);
+        margin-left: var(--spacing-small);
+        font-weight: bold;
+        border: 1px solid rgba(0, 170, 255, 0.2);
+    }
+    
+    /* Painel de filtros avançados com expansão/colapso */
+    .filter-panel {
+        background-color: var(--color-card-background);
+        border-radius: var(--border-radius);
+        margin-bottom: var(--spacing-xlarge);
+        box-shadow: var(--box-shadow);
+        border: 1px solid var(--color-border);
+        overflow: hidden;
+    }
+    
+    .filter-header {
+        padding: var(--spacing-medium);
+        background-color: rgba(0, 170, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    
+    .filter-header:hover {
+        background-color: rgba(0, 170, 255, 0.2);
+    }
+    
+    .filter-header h3 {
+        margin: 0;
+        color: var(--color-primary);
+        font-size: var(--font-size-large);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        border-bottom: none;
+    }
+    
+    .filter-header h3 i {
+        margin-right: var(--spacing-small);
+    }
+    
+    .toggle-icon {
+        color: var(--color-primary);
+        transition: transform 0.3s ease;
+    }
+    
+    .toggle-icon.active {
+        transform: rotate(180deg);
+    }
+    
+    .filter-body {
+        padding: var(--spacing-large);
+        border-top: 1px solid var(--color-border);
+        background-image: linear-gradient(180deg, rgba(17, 34, 64, 0.8), rgba(15, 42, 67, 0.95));
+    }
+    
+    .filter-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-medium);
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .filter-group label {
+        margin-bottom: var(--spacing-small);
+        color: var(--color-text);
+        font-weight: 500;
+    }
+    
+    .filter-input {
+        padding: var(--spacing-small) var(--spacing-medium);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-small);
+        background-color: rgba(10, 25, 41, 0.7);
+        color: var(--color-text);
+        font-size: var(--font-size-normal);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .filter-input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 2px rgba(0, 170, 255, 0.3);
+    }
+    
+    .filter-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--spacing-medium);
+        margin-top: var(--spacing-medium);
+    }
+    
+    /* Botões de ação */
+    .btn-action {
+        padding: var(--spacing-small) var(--spacing-large);
+        border-radius: var(--border-radius-small);
+        border: none;
+        font-weight: 500;
+        font-size: var(--font-size-normal);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+    
+    .btn-primary {
+        background-color: rgba(0, 170, 255, 0.3);
+        color: #00EEFF;
+        text-shadow: 0 0 5px rgba(0, 238, 255, 0.5);
+        box-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
+        border: 1px solid rgba(0, 170, 255, 0.3);
+    }
+    
+    .btn-primary:hover {
+        background-color: rgba(0, 170, 255, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px rgba(0, 238, 255, 0.5);
+        border: 1px solid rgba(0, 238, 255, 0.6);
+    }
+    
+    .btn-secondary {
+        background-color: rgba(127, 140, 141, 0.3);
+        color: #BDC3C7;
+        text-shadow: 0 0 5px rgba(189, 195, 199, 0.5);
+        box-shadow: 0 0 10px rgba(127, 140, 141, 0.3);
+        border: 1px solid rgba(127, 140, 141, 0.3);
+    }
+    
+    .btn-secondary:hover {
+        background-color: rgba(127, 140, 141, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px rgba(127, 140, 141, 0.5);
+        border: 1px solid rgba(127, 140, 141, 0.6);
+    }
+    
+    .btn-icon {
+        margin-right: var(--spacing-small);
+    }
+    
+    /* Results container */
+    .results-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-large);
+    }
+    
+    .no-results {
+        text-align: center;
+        padding: var(--spacing-xlarge);
+        background-color: var(--color-card-background);
+        border-radius: var(--border-radius);
+        color: var(--color-text-secondary);
+        font-style: italic;
+        border: 1px dashed var(--color-border);
+    }
+    
+    /* Estilo do card de resultado */
+    .result-card {
+        background-color: var(--color-card-background);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        border: 1px solid var(--color-border);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .result-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--box-shadow-hover);
+        border-color: rgba(0, 170, 255, 0.4);
+    }
+    
+    .result-header {
+        padding: var(--spacing-medium);
+        background-color: rgba(0, 170, 255, 0.1);
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    .result-header h3 {
+        margin: 0;
+        color: var(--color-primary);
+        font-size: var(--font-size-large);
+        font-weight: 600;
+        border-bottom: none;
+        display: block;
+    }
+    
+    .participant-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: var(--spacing-small);
+        flex-wrap: wrap;
+        gap: var(--spacing-small);
+    }
+    
+    .participant-email {
+        display: flex;
+        align-items: center;
+        font-size: var(--font-size-normal);
+        color: var(--color-text);
+    }
+    
+    .participant-id {
+        font-size: var(--font-size-small);
+        color: var(--color-text-secondary);
+        background-color: rgba(112, 238, 255, 0.1);
+        padding: 2px 8px;
+        border-radius: var(--border-radius-small);
+    }
+    
+    .result-body {
+        padding: var(--spacing-medium);
+    }
+    
+    /* Estilo da tabela de respostas */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: var(--spacing-small);
+        background-color: rgba(10, 25, 41, 0.4);
+        border-radius: var(--border-radius-small);
+        overflow: hidden;
+    }
+    
+    thead {
+        background-color: rgba(0, 170, 255, 0.2);
+    }
+    
+    th {
+        padding: var(--spacing-medium);
+        text-align: left;
+        color: var(--color-primary);
+        font-weight: 600;
+        border-bottom: 1px solid var(--color-border);
+    }
+    
+    td {
+        padding: var(--spacing-medium);
+        border-bottom: 1px solid rgba(26, 58, 95, 0.3);
+        color: var(--color-text);
+    }
+    
+    tr:last-child td {
+        border-bottom: none;
+    }
+    
+    tr:hover td {
+        background-color: rgba(0, 170, 255, 0.05);
+    }
+    
+    /* Paginação */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: var(--spacing-xlarge);
+        gap: var(--spacing-small);
+    }
+    
+    .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--border-radius-small);
+        background-color: var(--color-card-background);
+        color: var(--color-text);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: 1px solid var(--color-border);
+    }
+    
+    .page-link:hover {
+        background-color: rgba(0, 170, 255, 0.2);
+        color: var(--color-primary);
+    }
+    
+    .page-link.active {
+        background-color: rgba(0, 170, 255, 0.3);
+        color: var(--color-primary);
+        border-color: var(--color-primary);
+    }
+    
+    /* Estatísticas dos resultados */
+    .results-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-large);
+        margin-bottom: var(--spacing-large);
+    }
+    
+    .stat-card {
+        background-color: var(--color-card-background);
+        padding: var(--spacing-medium);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid rgba(0, 170, 255, 0.2);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--box-shadow-hover);
+        border-color: rgba(0, 170, 255, 0.4);
+    }
+    
+    .stat-card h4 {
+        margin-top: 0;
+        margin-bottom: var(--spacing-small);
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-normal);
+        font-weight: 500;
+    }
+    
+    .stat-card p {
+        font-size: var(--font-size-xlarge);
+        font-weight: bold;
+        margin: 0;
+        color: var(--color-primary);
+    }
+    
+    /* Estilos para dispositivos móveis */
+    @media (max-width: 768px) {
+        .results-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--spacing-medium);
+        }
+        
+        .filter-form {
+            grid-template-columns: 1fr;
+        }
+        
+        .filter-actions {
+            flex-direction: column;
+        }
+        
+        .btn-action {
+            width: 100%;
+        }
+        
+        table {
+            display: block;
+            overflow-x: auto;
+        }
+        
+        .results-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    /* Tabela responsiva para dispositivos móveis */
+    @media (max-width: 600px) {
+        table thead {
+            display: none;
+        }
+        
+        table, table tbody, table tr, table td {
+            display: block;
+            width: 100%;
+        }
+        
+        table tr {
+            margin-bottom: var(--spacing-medium);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-small);
+            overflow: hidden;
+        }
+        
+        table td {
+            text-align: right;
+            padding-left: 50%;
+            position: relative;
+            border-bottom: 1px solid rgba(26, 58, 95, 0.3);
+        }
+        
+        table td:before {
+            content: attr(data-label);
+            position: absolute;
+            left: var(--spacing-medium);
+            font-weight: 600;
+            color: var(--color-primary);
+            text-align: left;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <!-- Cabeçalho dos Resultados -->
+    <div class="results-header">
+        <div>
+            <h2>Resultados da Sala</h2>
+            <div class="room-info">
+                <span>{{ room.name }}</span>
+                <span class="code-text">{{ room.code }}</span>
+            </div>
+        </div>
+        <a href="{{ url_for('admin.room_management', room_id=room.id) }}" class="btn-action btn-secondary">
+            <i class="fas fa-arrow-left btn-icon"></i> Voltar para Gerenciar Sala
+        </a>
+    </div>
+    
+    <!-- Estatísticas dos Resultados -->
+    <div class="results-stats">
+        <div class="stat-card">
+            <h4>Total de Participantes</h4>
+            <p>{{ total_participants if total_participants is defined else 0 }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>Total de Respostas</h4>
+            <p>{{ total_answers if total_answers is defined else 0 }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>Taxa de Resposta</h4>
+            <p>{{ response_rate if response_rate is defined else '0%' }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>Última Resposta</h4>
+            <p>{{ last_response if last_response is defined else 'N/A' }}</p>
+        </div>
+    </div>
+
+    <!-- Painel de Filtros Avançados -->
+    <div class="filter-panel">
+        <div class="filter-header" id="toggleFilters">
+            <h3><i class="fas fa-filter"></i> Filtros Avançados</h3>
+            <span class="toggle-icon" id="filterToggleIcon"><i class="fas fa-chevron-down"></i></span>
+        </div>
+        
+        <div class="filter-body" id="filterBody">
+            <form method="GET" action="{{ url_for('admin.view_results', room_id=room.id) }}" class="filter-form">
+                <div class="filter-group">
+                    <label for="email">Email do Participante:</label>
+                    <input type="email" id="email" name="email" value="{{ filter_email if filter_email is not none else '' }}" class="filter-input" placeholder="Filtrar por email...">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="participant_entry_id">ID da Entrada:</label>
+                    <input type="text" id="participant_entry_id" name="participant_entry_id" value="{{ filter_participant_id if filter_participant_id is not none else '' }}" class="filter-input" placeholder="Filtrar por ID da entrada...">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="date_range">Período:</label>
+                    <select id="date_range" name="date_range" class="filter-input">
+                        <option value="">Qualquer período</option>
+                        <option value="today" {{ 'selected' if filter_date_range == 'today' else '' }}>Hoje</option>
+                        <option value="week" {{ 'selected' if filter_date_range == 'week' else '' }}>Última semana</option>
+                        <option value="month" {{ 'selected' if filter_date_range == 'month' else '' }}>Último mês</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="question_id">Pergunta específica:</label>
+                    <select id="question_id" name="question_id" class="filter-input">
+                        <option value="">Todas as perguntas</option>
+                        {% if questions %}
+                            {% for question in questions %}
+                                <option value="{{ question.id }}" {{ 'selected' if filter_question_id == question.id|string else '' }}>{{ question.text|truncate(30) }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                
+                <div class="filter-actions">
+                    <button type="submit" class="btn-action btn-primary">
+                        <i class="fas fa-search btn-icon"></i> Aplicar Filtros
+                    </button>
+                    <a href="{{ url_for('admin.view_results', room_id=room.id) }}" class="btn-action btn-secondary">
+                        <i class="fas fa-times btn-icon"></i> Limpar Filtros
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Container de Resultados -->
+    <div class="results-container">
+        {% if results %}
+            {% for participant_entry_result in results %}
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3>Entrada do Participante</h3>
+                        <div class="participant-info">
+                            <div class="participant-email">
+                                <i class="fas fa-user btn-icon" style="color: var(--color-primary);"></i>
+                                {{ participant_entry_result.participant_email }}
+                            </div>
+                            <div class="participant-id">
+                                <i class="fas fa-fingerprint btn-icon"></i>
+                                ID: {{ participant_entry_result.participant_entry_id }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-body">
+                        {% if participant_entry_result.answers %}
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th width="5%">#</th>
+                                        <th width="40%">Pergunta</th>
+                                        <th width="40%">Resposta</th>
+                                        <th width="15%">Submetido Em</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for answer in participant_entry_result.answers %}
+                                        <tr>
+                                            <td data-label="Pergunta #">{{ loop.index }}</td>
+                                            <td data-label="Texto da Pergunta">{{ answer.question.text }}</td>
+                                            <td data-label="Resposta">{{ answer.text }}</td>
+                                            <td data-label="Submetido Em">{{ answer.submitted_at.strftime('%Y-%m-%d %H:%M') if answer.submitted_at else 'N/A' }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="no-results">
+                                <i class="fas fa-info-circle" style="color: var(--color-primary); font-size: 24px; margin-bottom: var(--spacing-medium);"></i>
+                                <p>Este participante não submeteu respostas para esta entrada na sala.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <!-- Paginação -->
+            {% if pagination and pagination.pages > 1 %}
+                <div class="pagination">
+                    {% if pagination.has_prev %}
+                        <a href="{{ url_for('admin.view_results', room_id=room.id, page=pagination.prev_num, email=filter_email, participant_entry_id=filter_participant_id, date_range=filter_date_range, question_id=filter_question_id) }}" class="page-link">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for page in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page %}
+                            <a href="{{ url_for('admin.view_results', room_id=room.id, page=page, email=filter_email, participant_entry_id=filter_participant_id, date_range=filter_date_range, question_id=filter_question_id) }}" class="page-link {{ 'active' if page == pagination.page else '' }}">
+                                {{ page }}
+                            </a>
+                        {% else %}
+                            <span class="page-link">...</span>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if pagination.has_next %}
+                        <a href="{{ url_for('admin.view_results', room_id=room.id, page=pagination.next_num, email=filter_email, participant_entry_id=filter_participant_id, date_range=filter_date_range, question_id=filter_question_id) }}" class="page-link">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+        {% elif filter_email or filter_participant_id or filter_date_range or filter_question_id %}
+            <div class="no-results">
+                <i class="fas fa-search" style="color: var(--color-primary); font-size: 24px; margin-bottom: var(--spacing-medium);"></i>
+                <p>Nenhum resultado encontrado com os filtros aplicados.</p>
+                <a href="{{ url_for('admin.view_results', room_id=room.id) }}" class="btn-action btn-secondary" style="margin-top: var(--spacing-medium);">
+                    <i class="fas fa-times btn-icon"></i> Limpar Filtros
+                </a>
+            </div>
+        {% else %}
+            <div class="no-results">
+                <i class="fas fa-users-slash" style="color: var(--color-primary); font-size: 24px; margin-bottom: var(--spacing-medium);"></i>
+                <p>Nenhum participante entrou nesta sala ainda.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Função para alternar a visibilidade do painel de filtros
+        const toggleFilters = document.getElementById('toggleFilters');
+        const filterBody = document.getElementById('filterBody');
+        const filterToggleIcon = document.getElementById('filterToggleIcon');
+        
+        // Definir estado inicial (colapsado se não houver filtros ativos)
+        const hasActiveFilters = {% if filter_email or filter_participant_id or filter_date_range or filter_question_id %}true{% else %}false{% endif %};
+        
+        if (!hasActiveFilters) {
+            filterBody.style.display = 'none';
+        } else {
+            filterToggleIcon.classList.add('active');
+        }
+        
+        toggleFilters.addEventListener('click', function() {
+            if (filterBody.style.display === 'none') {
+                filterBody.style.display = 'block';
+                filterToggleIcon.classList.add('active');
+            } else {
+                filterBody.style.display = 'none';
+                filterToggleIcon.classList.remove('active');
+            }
+        });
+        
+        // Exportar resultados para CSV
+        const exportBtn = document.getElementById('exportResults');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function() {
+                alert('Função de exportação será implementada em breve!');
+            });
+        }
+        
+        // Função para aplicar filtros ao digitar (opção de busca em tempo real)
+        const emailFilter = document.getElementById('email');
+        if (emailFilter) {
+            emailFilter.addEventListener('input', debounce(function() {
+                if (this.value.length > 2 || this.value.length === 0) {
+                    // Opcional: enviar formulário automaticamente após digitar
+                    // document.querySelector('.filter-form').submit();
+                }
+            }, 500));
+        }
+        
+        // Função de debounce para evitar múltiplas requisições
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this, args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(function() {
+                    func.apply(context, args);
+                }, wait);
+            };
+        }
+    });
+</script>
+{% endblock %}

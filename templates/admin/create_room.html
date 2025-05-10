@@ -1,1 +1,22 @@
+{% extends "base.html" %}
 
+{% block title %}Criar Nova Sala - Hackathon App{% endblock %}
+
+{% block content %}
+<div class="content-container"> {# Usar a nova classe para o conteúdo específico #}
+    <h2>Criar Nova Sala</h2>
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div>
+            {{ form.name.label }}<br>
+            {{ form.name(size=32) }}
+            {% for error in form.name.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</div>
+{% endblock %}

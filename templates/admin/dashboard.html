@@ -1,0 +1,615 @@
+{# templates/admin/dashboard.html - Versão Melhorada e Reorganizada #}
+
+{% extends "base.html" %}
+
+{% block title %}Painel Administrativo - Hackathon App{% endblock %}
+
+{% block head_extra %}
+<style>
+    :root {
+        /* Paleta de cores futurista azul escuro */
+        --color-primary: #00AAFF;
+        --color-primary-dark: #0077CC;
+        --color-secondary: #00FFDD;
+        --color-secondary-dark: #00CCBB;
+        --color-accent: #70EEFF;
+        --color-danger: #FF5577;
+        --color-success: #00DDAA;
+        --color-background: #0A1929;
+        --color-background-secondary: #0F2A43;
+        --color-card-background: #112240;
+        --color-text: #7FBBFF;
+        --color-text-secondary: #5F99DD;
+        --color-text-light: #4477AA;
+        --color-border: #1A3A5F;
+        --color-border-light: #234567;
+        --color-text-on-primary: #CCFFFF;
+        --color-text-on-secondary: #BBFFEE;
+        --color-text-on-danger: #FFE8EE;
+        --color-text-on-success: #AAFFEE;
+        
+        /* Dimensões e espaçamentos */
+        --spacing-small: 8px;
+        --spacing-medium: 16px;
+        --spacing-large: 24px;
+        --spacing-xlarge: 32px;
+        
+        /* Bordas e sombras */
+        --border-radius: 8px;
+        --border-radius-small: 4px;
+        --box-shadow: 0 2px 12px rgba(0, 170, 255, 0.2);
+        --box-shadow-hover: 0 4px 20px rgba(0, 170, 255, 0.4);
+        
+        /* Tipografia */
+        --font-size-small: 0.875rem;
+        --font-size-normal: 1rem;
+        --font-size-large: 1.25rem;
+        --font-size-xlarge: 1.5rem;
+    }
+    
+    body {
+        background-color: var(--color-background);
+        background-image: linear-gradient(45deg, #0A1929, #0F2A43);
+        color: var(--color-text);
+        font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+    }
+    
+    .content-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--spacing-large);
+    }
+
+    /* Header com título e ações principais */
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-xlarge);
+        padding-bottom: var(--spacing-medium);
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .dashboard-header h2 {
+        margin: 0;
+        font-size: var(--font-size-xlarge);
+        color: var(--color-primary-dark);
+        font-weight: 700;
+    }
+
+    .dashboard-actions {
+        display: flex;
+        gap: var(--spacing-medium);
+        align-items: center;
+    }
+
+    /* Estatísticas em cards */
+    .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: var(--spacing-large);
+        margin-bottom: var(--spacing-xlarge);
+    }
+
+    .stat-card {
+        background-color: var(--color-card-background);
+        padding: var(--spacing-large);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--box-shadow-hover);
+    }
+
+    .stat-card h4 {
+        margin-top: 0;
+        margin-bottom: var(--spacing-small);
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-normal);
+        font-weight: 500;
+    }
+
+    .stat-card p {
+        font-size: var(--font-size-xlarge);
+        font-weight: bold;
+        margin: 0;
+        color: var(--color-primary);
+    }
+
+    /* Seção de busca e filtros */
+    .search-filter-section {
+        margin-bottom: var(--spacing-xlarge);
+        padding: var(--spacing-medium);
+        background-color: var(--color-background-secondary);
+        border-radius: var(--border-radius);
+        display: flex;
+        gap: var(--spacing-medium);
+        align-items: center;
+        flex-wrap: wrap;
+        box-shadow: var(--box-shadow);
+    }
+
+    .search-filter-section label {
+        font-weight: 600;
+        margin-right: var(--spacing-small);
+        color: var(--color-text);
+    }
+
+    .search-filter-section input[type="text"] {
+        padding: var(--spacing-small) var(--spacing-medium);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-small);
+        flex-grow: 1;
+        min-width: 150px;
+        font-size: var(--font-size-normal);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .search-filter-section input[type="text"]:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+    }
+
+    /* Título da seção de salas */
+    h3 {
+        margin-top: var(--spacing-large);
+        margin-bottom: var(--spacing-large);
+        color: var(--color-text);
+        font-size: var(--font-size-large);
+        font-weight: 600;
+        padding-bottom: var(--spacing-small);
+        border-bottom: 2px solid var(--color-primary);
+        display: inline-block;
+    }
+
+    /* Grid de cards de salas */
+    .rooms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--spacing-large);
+    }
+
+    .room-card {
+        background-color: var(--color-card-background);
+        background-image: linear-gradient(170deg, rgba(23, 50, 95, 0.7), rgba(10, 25, 41, 0.9));
+        padding: var(--spacing-large);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-top: 4px solid var(--color-primary);
+        border: 1px solid rgba(0, 170, 255, 0.2);
+    }
+    
+    .room-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--box-shadow-hover);
+        border: 1px solid rgba(0, 170, 255, 0.4);
+    }
+
+    .room-card h4 {
+        margin-top: 0;
+        margin-bottom: var(--spacing-medium);
+        color: var(--color-primary-dark);
+        font-size: var(--font-size-large);
+        font-weight: 600;
+    }
+
+    .room-info {
+        margin-bottom: var(--spacing-medium);
+    }
+
+    .room-card p {
+        margin-bottom: var(--spacing-small);
+        color: var(--color-text);
+        font-size: var(--font-size-normal);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .room-card .room-code {
+        font-weight: bold;
+        color: var(--color-accent);
+        padding: 2px 8px;
+        background-color: rgba(243, 156, 18, 0.1);
+        border-radius: var(--border-radius-small);
+    }
+
+    .room-card .room-status {
+        font-weight: bold;
+        padding: 2px 8px;
+        border-radius: var(--border-radius-small);
+    }
+    
+    .room-card .room-status.active {
+        color: var(--color-secondary);
+        background-color: rgba(46, 204, 113, 0.1);
+    }
+    
+    .room-card .room-status.inactive {
+        color: var(--color-text-secondary);
+        background-color: rgba(127, 140, 141, 0.1);
+    }
+
+    .room-card .room-actions {
+        margin-top: var(--spacing-large);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-small);
+    }
+    
+    .room-card .bottom-actions {
+        margin-top: var(--spacing-small);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-small);
+    }
+    
+    /* Garante que todos os 4 botões dentro do card tenham o mesmo tamanho */
+    .room-card .room-actions .btn-action,
+    .room-card .bottom-actions .btn-action,
+    .room-card .bottom-actions form,
+    .room-card .bottom-actions button {
+        width: 100%;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        margin: 0;
+    }
+
+    /* Botões e ações */
+    .btn-action {
+        padding: var(--spacing-small) var(--spacing-medium);
+        border-radius: var(--border-radius-small);
+        text-decoration: none;
+        text-align: center;
+        font-weight: 500;
+        font-size: var(--font-size-small);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: rgba(0, 140, 210, 0.3);
+        color: #00EEFF;
+        text-shadow: 0 0 5px rgba(0, 238, 255, 0.5);
+        box-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
+        border: 1px solid rgba(0, 170, 255, 0.3);
+        letter-spacing: 0.5px;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px rgba(0, 238, 255, 0.5);
+        background-color: rgba(0, 170, 255, 0.4);
+        border: 1px solid rgba(0, 238, 255, 0.6);
+        text-shadow: 0 0 8px rgba(0, 238, 255, 0.8);
+    }
+    
+    .btn-action:active {
+        transform: translateY(0);
+    }
+
+    .create-room-btn {
+        display: inline-block;
+        padding: var(--spacing-small) var(--spacing-large);
+        background-color: rgba(0, 221, 170, 0.3);
+        color: #00FFDD;
+        text-decoration: none;
+        border-radius: var(--border-radius);
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-shadow: 0 0 5px rgba(0, 255, 221, 0.5);
+        box-shadow: 0 0 10px rgba(0, 221, 170, 0.3);
+        border: 1px solid rgba(0, 221, 170, 0.3);
+    }
+    
+    .create-room-btn:hover {
+        background-color: rgba(0, 204, 187, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px rgba(0, 255, 221, 0.5);
+        border: 1px solid rgba(0, 255, 221, 0.6);
+    }
+
+    .view-results-btn {
+        background-color: rgba(0, 140, 210, 0.3);
+        color: #00EEFF;
+    }
+    
+    .view-results-btn:hover {
+        background-color: rgba(0, 170, 255, 0.4);
+    }
+
+    .manage-room-btn {
+        background-color: rgba(0, 204, 187, 0.3);
+        color: #00FFEE;
+    }
+    
+    .manage-room-btn:hover {
+        background-color: rgba(0, 255, 221, 0.4);
+    }
+
+    .delete-room-link {
+        background-color: rgba(255, 85, 119, 0.3);
+        color: #FF77AA;
+        text-shadow: 0 0 5px rgba(255, 119, 170, 0.5);
+    }
+    
+    .delete-room-link:hover {
+        background-color: rgba(255, 85, 119, 0.4);
+    }
+    
+    .toggle-status-btn {
+        background-color: rgba(112, 238, 255, 0.3);
+        color: #70EEFF;
+        text-shadow: 0 0 5px rgba(112, 238, 255, 0.5);
+    }
+    
+    .toggle-status-btn:hover {
+        background-color: rgba(112, 238, 255, 0.4);
+    }
+
+    /* Alertas e mensagens */
+    .alert {
+        padding: var(--spacing-medium);
+        margin-bottom: var(--spacing-large);
+        border-radius: var(--border-radius);
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background-color: rgba(46, 204, 113, 0.1);
+        border-left: 4px solid var(--color-success);
+        color: #27ae60;
+    }
+
+    .alert-danger {
+        background-color: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid var(--color-danger);
+        color: #c0392b;
+    }
+
+    .alert-warning {
+        background-color: rgba(243, 156, 18, 0.1);
+        border-left: 4px solid var(--color-accent);
+        color: #d35400;
+    }
+    
+    .text-center {
+        text-align: center;
+        color: var(--color-text-secondary);
+        font-style: italic;
+        margin: var(--spacing-xlarge) 0;
+    }
+
+    /* Responsividade para telas menores */
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--spacing-medium);
+        }
+        
+        .dashboard-actions {
+            width: 100%;
+        }
+        
+        .create-room-btn {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .search-filter-section {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .search-filter-section input[type="text"] {
+            width: 100%;
+        }
+        
+        .rooms-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .quick-stats {
+            grid-template-columns: 1fr;
+        }
+        
+        .room-card .room-actions, 
+        .room-card .bottom-actions {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-container">
+
+    {# Cabeçalho do Dashboard #}
+    <div class="dashboard-header">
+        <h2>Painel Administrativo</h2>
+        <div class="dashboard-actions">
+            <a href="{{ url_for('admin.create_room') }}" class="create-room-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 5px;">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Criar Nova Sala
+            </a>
+        </div>
+    </div>
+
+    {# Exibir mensagens flash #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {# Estatísticas Rápidas #}
+<div class="quick-stats">
+    <div class="stat-card">
+        <h4>Total de Salas</h4>
+        <p>{{ rooms|length }}</p>
+    </div>
+    <div class="stat-card">
+        <h4>Salas Ativas</h4>
+        <p>{{ rooms|selectattr('is_active')|list|length }}</p>
+    </div>
+    <div class="stat-card">
+        <h4>Total de Participantes</h4>
+        {# Agora usa a variável 'total_participants' passada da view #}
+        <p>{{ total_participants }}</p>
+    </div>
+    <div class="stat-card">
+        <h4>Total de Respostas</h4>
+        {# Agora usa a variável 'total_responses' passada da view #}
+        <p>{{ total_responses }}</p>
+    </div>
+</div>
+
+    {# Seção de Busca e Filtro #}
+    <div class="search-filter-section">
+        <label for="room-search">Buscar Salas:</label>
+        <input type="text" id="room-search" placeholder="Nome ou Código da Sala">
+    </div>
+
+    {# Seção de Listagem de Salas #}
+    <h3>Minhas Salas</h3>
+
+    {% if rooms %}
+        <div class="rooms-grid">
+            {% for room in rooms %}
+                <div class="room-card">
+                    <div class="room-info">
+                        <h4>{{ room.name }}</h4>
+                        <p>
+                            <span>Código:</span> 
+                            <span class="room-code">{{ room.code }}</span>
+                        </p>
+                        <p>
+                            <span>Status:</span> 
+                            <span class="room-status {% if room.is_active %}active{% else %}inactive{% endif %}">
+                                {{ 'Ativa' if room.is_active else 'Inativa' }}
+                            </span>
+                        </p>
+                        <p>
+                            <span>Criada Em:</span>
+                            <span>{{ room.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                        </p>
+                    </div>
+
+                    <div>
+                        <div class="room-actions">
+                            <a href="{{ url_for('admin.view_results', room_id=room.id) }}" class="btn-action view-results-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 5px;">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                Resultados
+                            </a>
+                            <a href="{{ url_for('admin.room_management', room_id=room.id) }}" class="btn-action manage-room-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 5px;">
+                                    <path d="M12 20h9"></path>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                </svg>
+                                Gerenciar
+                            </a>
+                        </div>
+                        
+                        <div class="bottom-actions">
+                            <a href="{{ url_for('admin.delete_room', room_id=room.id) }}"
+                               class="btn-action delete-room-link"
+                               onclick="return confirm('Tem certeza que deseja excluir a sala {{ room.name }}?');">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 5px;">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                Deletar
+                            </a>
+                            
+                            <form action="{{ url_for('admin.toggle_room_active', room_id=room.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn-action toggle-status-btn"
+                                        onclick="return confirm('Tem certeza que deseja alternar o status da sala {{ room.name }}?');">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 5px;">
+                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                    </svg>
+                                    {{ 'Desativar' if room.is_active else 'Ativar' }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center">Você ainda não criou nenhuma sala.</p>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Script para links de exclusão com método POST
+        const deleteLinks = document.querySelectorAll('.delete-room-link');
+
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                if (this.onclick && this.onclick() === false) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                const form = document.createElement('form');
+                form.setAttribute('method', 'post');
+                form.setAttribute('action', this.href);
+                document.body.appendChild(form);
+                form.submit();
+            });
+        });
+
+        // Script para busca de salas
+        const searchInput = document.getElementById('room-search');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const roomCards = document.querySelectorAll('.room-card');
+
+            roomCards.forEach(card => {
+                const roomName = card.querySelector('h4').textContent.toLowerCase();
+                const roomCode = card.querySelector('.room-code').textContent.toLowerCase();
+
+                if (roomName.includes(searchTerm) || roomCode.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
