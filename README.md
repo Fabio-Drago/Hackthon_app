@@ -7,7 +7,7 @@ Visite e teste aqui: https://deadpan.pythonanywhere.com
 
 ## Sobre o Projeto
 
-Este projeto foi desenvolvido para ser implementado como proposta de um evento na universidade, usando MySQL e tendo deploy, seria capaz de lidar com muitos estudantes, onde os mesmos iriam realizar tarefas práticas de redes, ou testes de penetração e responder as perguntas sobre o que fizeram na plataforma, a fim de administradores corrigirem seus trabalhos e escolherem um vencedor. Algumas funções não foram terminadas, mas ele demonstra que é possível realizar muito quando existe esforço e colaboração.
+Este projeto foi desenvolvido como uma proposta para um evento universitário, usando MySQL e tendo deploy, seria capaz de lidar com muitos estudantes, onde os mesmos iriam realizar tarefas práticas de redes, ou testes de penetração e responder as perguntas sobre o que fizeram na plataforma, a fim de administradores corrigirem seus trabalhos e escolherem um vencedor. Algumas funções não foram terminadas, mas ele demonstra que é possível realizar muito quando existe esforço e colaboração.
 
 ## Requisitos
 
